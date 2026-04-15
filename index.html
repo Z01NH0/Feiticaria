@@ -1,0 +1,210 @@
+<div id="game" class="res-1680x1050">
+  <div id="startScreen" class="start-screen">
+    <div class="start-box">
+      <h1>Feitiçaria</h1>
+      <p>Agora com mulligan, resolução selecionável e uma mesa que finalmente parou de querer virar pergaminho vertical.</p>
+
+      <div class="form-row">
+        <label for="playerNameInput">Nome do jogador</label>
+        <input id="playerNameInput" type="text" maxlength="18" placeholder="Digite seu nome" />
+      </div>
+
+      <div class="form-row">
+        <label for="resolutionSelect">Resolução da mesa</label>
+        <select id="resolutionSelect">
+          <option value="res-1366x768">1366 x 768</option>
+          <option value="res-1600x900">1600 x 900</option>
+          <option value="res-1680x1050" selected>1680 x 1050</option>
+          <option value="res-1920x1080">1920 x 1080</option>
+        </select>
+      </div>
+
+      <button id="startGameBtn">Iniciar Partida</button>
+    </div>
+  </div>
+
+  <div id="turnOverlay" class="turn-overlay hidden">
+    <div id="turnOverlayText" class="turn-overlay-text">TURNO DO JOGADOR</div>
+  </div>
+
+  <div id="mulliganModal" class="overlay-modal hidden">
+    <div class="overlay-box">
+      <h2 id="mulliganTitle">Mão Inicial</h2>
+      <p id="mulliganText">Você quer manter esta mão ou fazer mulligan?</p>
+      <div id="mulliganPreview" class="modal-card-row mulligan-preview"></div>
+      <div class="modal-actions">
+        <button id="keepHandBtn">Manter Mão</button>
+        <button id="mulliganBtn">Mulligan</button>
+      </div>
+      <p class="small-note">Cada mulligan reduz sua mão inicial em 1 carta. Sim, escolhas têm consequências. Que novidade.</p>
+    </div>
+  </div>
+
+  <div id="targetModal" class="overlay-modal hidden">
+    <div class="overlay-box">
+      <h2 id="targetTitle">Escolha um alvo</h2>
+      <p id="targetText">Selecione um alvo válido na mesa.</p>
+      <button id="cancelTargetBtn">Cancelar</button>
+    </div>
+  </div>
+
+  <div id="blockModal" class="overlay-modal hidden">
+    <div class="overlay-box wide-box">
+      <h2>Bloqueio Manual</h2>
+      <p id="blockInfoText">Escolha um atacante do BOT e depois um bloqueador seu.</p>
+      <div class="block-columns">
+        <div>
+          <h3>Atacantes do BOT</h3>
+          <div id="blockAttackers" class="modal-card-row"></div>
+        </div>
+        <div>
+          <h3>Seus Bloqueadores</h3>
+          <div id="blockDefenders" class="modal-card-row"></div>
+        </div>
+      </div>
+      <div class="modal-actions">
+        <button id="confirmBlocksBtn">Confirmar Bloqueios</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="winnerModal" class="winner-modal hidden">
+    <div class="winner-box">
+      <h2 id="winnerText">Vitória!</h2>
+      <button id="restartBtn">Jogar Novamente</button>
+    </div>
+  </div>
+
+  <div class="hud-top">
+    <div class="brand-box">
+      <div class="logo">Feitiçaria</div>
+      <div class="subtitle">V6 Wide Table</div>
+    </div>
+
+    <div class="status-box">
+      <div id="turnText">Turno do Jogador</div>
+      <div id="phaseText">Fase: Principal</div>
+      <div id="infoText">Baixe terrenos, jogue cartas e tente fazer isso parecer planejamento.</div>
+    </div>
+
+    <div class="top-right-box">
+      <div class="resolution-box">
+        <label for="liveResolutionSelect">Resolução</label>
+        <select id="liveResolutionSelect">
+          <option value="res-1366x768">1366 x 768</option>
+          <option value="res-1600x900">1600 x 900</option>
+          <option value="res-1680x1050" selected>1680 x 1050</option>
+          <option value="res-1920x1080">1920 x 1080</option>
+        </select>
+      </div>
+
+      <div class="action-toolbar">
+        <button id="combatBtn" class="action-btn action-blue">Ir para Combate</button>
+        <button id="attackBtn" class="action-btn action-red">Atacar</button>
+        <button id="endTurnBtn" class="action-btn action-gold">Encerrar Turno</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="main-board">
+    <aside class="side-panel left-panel">
+      <div class="panel-block compact">
+        <div class="panel-title">Deck BOT</div>
+        <div id="aiDeckPile" class="deck-pile enemy-pile"></div>
+        <div class="panel-count"><span id="aiDeckCount">60</span></div>
+      </div>
+
+      <div class="panel-block compact">
+        <div class="panel-title">Mão BOT</div>
+        <div class="hidden-hand-box">
+          <div class="mini-card-back"></div>
+          <div class="panel-count"><span id="aiHandCount">7</span></div>
+        </div>
+      </div>
+
+      <div class="panel-block compact">
+        <div class="panel-title">Cemitério BOT</div>
+        <div id="aiGravePile" class="grave-pile"></div>
+        <div class="panel-count"><span id="aiGraveCount">0</span></div>
+      </div>
+    </aside>
+
+    <section class="table-area">
+      <div class="table-glow top-glow"></div>
+      <div class="table-glow bottom-glow"></div>
+
+      <div class="opponent-zone">
+        <div class="player-info enemy-info">
+          <div class="avatar enemy-avatar">BOT</div>
+          <div class="player-meta">
+            <div class="player-name">BOT</div>
+            <div>Vida: <span id="aiLife">20</span></div>
+            <div>Mana: <span id="aiMana">0</span>/<span id="aiManaMax">0</span></div>
+          </div>
+        </div>
+
+        <div class="zone-title">Mão do BOT</div>
+        <div id="aiHandFan" class="opponent-hand-fan"></div>
+
+        <div class="zone-title">Criaturas do BOT</div>
+        <div id="aiBattlefield" class="board-row creature-row enemy-creatures"></div>
+
+        <div class="zone-title">Terrenos do BOT</div>
+        <div id="aiLands" class="board-row land-row enemy-lands"></div>
+      </div>
+
+      <div class="middle-divider">
+        <div class="middle-emblem"></div>
+      </div>
+
+      <div class="player-zone">
+        <div class="zone-title">Criaturas</div>
+        <div id="playerBattlefield" class="board-row creature-row player-creatures"></div>
+
+        <div class="zone-title">Terrenos</div>
+        <div id="playerLands" class="board-row land-row player-lands"></div>
+
+        <div class="player-bottom-info">
+          <div class="player-info">
+            <div class="avatar player-avatar">YOU</div>
+            <div class="player-meta">
+              <div id="playerNameLabel" class="player-name">Jogador</div>
+              <div>Vida: <span id="playerLife">20</span></div>
+              <div>Mana: <span id="playerMana">0</span>/<span id="playerManaMax">0</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="zone-title">Sua Mão</div>
+        <div id="playerHandFan" class="player-hand-fan"></div>
+      </div>
+    </section>
+
+    <aside class="side-panel right-panel">
+      <div class="panel-block compact">
+        <div class="panel-title">Seu Deck</div>
+        <div id="playerDeckPile" class="deck-pile"></div>
+        <div class="panel-count"><span id="playerDeckCount">60</span></div>
+      </div>
+
+      <div class="panel-block compact">
+        <div class="panel-title">Seu Cemitério</div>
+        <div id="playerGravePile" class="grave-pile"></div>
+        <div class="panel-count"><span id="playerGraveCount">0</span></div>
+      </div>
+
+      <div class="panel-block tips-box">
+        <div class="panel-title">Regras rápidas</div>
+        <p>• 1 terreno por turno.</p>
+        <p>• Mulligan disponível no início.</p>
+        <p>• Bloqueio do jogador é manual.</p>
+        <p>• Algumas mágicas pedem alvo.</p>
+      </div>
+    </aside>
+  </div>
+
+  <div class="log-panel">
+    <div class="panel-title">Histórico</div>
+    <div id="messageLog" class="message-log"></div>
+  </div>
+</div>
