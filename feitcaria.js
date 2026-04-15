@@ -1,0 +1,1230 @@
+const CARD_POOL = {
+  lands: [
+    { name: "Floresta", type: "land", text: "Gera mana para conjurações.", rarity: "Comum" },
+    { name: "Montanha", type: "land", text: "Gera mana para conjurações.", rarity: "Comum" },
+    { name: "Ilha", type: "land", text: "Gera mana para conjurações.", rarity: "Comum" },
+    { name: "Pântano", type: "land", text: "Gera mana para conjurações.", rarity: "Comum" },
+    { name: "Planície", type: "land", text: "Gera mana para conjurações.", rarity: "Comum" }
+  ],
+  creatures: [
+    { name: "Lobo Prateado", type: "creature", cost: 1, power: 1, toughness: 1, ability: "haste", abilityLabel: "Ímpeto", text: "Pode atacar no turno em que entra.", rarity: "Comum" },
+    { name: "Escudeiro de Carvalho", type: "creature", cost: 2, power: 2, toughness: 2, ability: "none", abilityLabel: "", text: "Criatura simples e sólida.", rarity: "Comum" },
+    { name: "Goblin Saqueador", type: "creature", cost: 2, power: 3, toughness: 1, ability: "haste", abilityLabel: "Ímpeto", text: "Entra querendo confusão.", rarity: "Incomum" },
+    { name: "Místico do Vale", type: "creature", cost: 2, power: 1, toughness: 3, ability: "lifelink", abilityLabel: "Vida", text: "Ao causar dano direto, você ganha vida.", rarity: "Incomum" },
+    { name: "Arqueira Celeste", type: "creature", cost: 3, power: 2, toughness: 3, ability: "drawOnHit", abilityLabel: "Compra", text: "Ao causar dano direto, você compra 1 carta.", rarity: "Rara" },
+    { name: "Urso das Runas", type: "creature", cost: 3, power: 3, toughness: 3, ability: "none", abilityLabel: "", text: "O clássico honesto.", rarity: "Comum" },
+    { name: "Cavaleiro Rubro", type: "creature", cost: 4, power: 4, toughness: 3, ability: "trample", abilityLabel: "Atropelar", text: "Dano excedente passa para o jogador defensor.", rarity: "Rara" },
+    { name: "Guardião de Marfim", type: "creature", cost: 4, power: 2, toughness: 5, ability: "ward", abilityLabel: "Escudo", text: "Recebe 1 dano a menos de mágicas.", rarity: "Incomum" },
+    { name: "Hidra do Pântano", type: "creature", cost: 5, power: 5, toughness: 4, ability: "trample", abilityLabel: "Atropelar", text: "Difícil de segurar sem apanhar junto.", rarity: "Rara" },
+    { name: "Draco de Cinzas", type: "creature", cost: 5, power: 5, toughness: 5, ability: "lifelink", abilityLabel: "Vida", text: "Drena vida quando passa dano.", rarity: "Rara" },
+    { name: "Titã da Floresta", type: "creature", cost: 6, power: 6, toughness: 6, ability: "trample", abilityLabel: "Atropelar", text: "Gigante bruto, com dano que sobra.", rarity: "Rara" },
+    { name: "Colosso Arcano", type: "creature", cost: 7, power: 7, toughness: 7, ability: "ward", abilityLabel: "Escudo", text: "Reduz dano de mágicas recebidas.", rarity: "Mítica" },
+    { name: "Aureon, Rei Solar", type: "creature", cost: 7, power: 6, toughness: 7, ability: "legendBuff", abilityLabel: "Aura", text: "Lendária. Suas outras criaturas recebem +1 de poder.", rarity: "Mítica", legendary: true },
+    { name: "Nyxara, Bruxa Eterna", type: "creature", cost: 6, power: 4, toughness: 6, ability: "legendDrain", abilityLabel: "Dreno", text: "Lendária. Ao causar dano direto, o oponente perde 1 vida extra.", rarity: "Mítica", legendary: true }
+  ],
+  spells: [
+    { name: "Raio Arcano", type: "spell", cost: 2, effect: "damage2", text: "Escolha criatura inimiga ou jogador e cause 2 de dano.", rarity: "Comum", targetMode: "enemyAny" },
+    { name: "Bola de Fogo", type: "spell", cost: 3, effect: "damage3", text: "Escolha criatura inimiga ou jogador e cause 3 de dano.", rarity: "Incomum", targetMode: "enemyAny" },
+    { name: "Explosão Solar", type: "spell", cost: 4, effect: "damage4", text: "Escolha criatura inimiga ou jogador e cause 4 de dano.", rarity: "Rara", targetMode: "enemyAny" },
+    { name: "Cura Vital", type: "spell", cost: 2, effect: "heal3", text: "Ganhe 3 de vida.", rarity: "Comum", targetMode: "none" },
+    { name: "Benção do Vale", type: "spell", cost: 3, effect: "heal5", text: "Ganhe 5 de vida.", rarity: "Incomum", targetMode: "none" },
+    { name: "Sabedoria Antiga", type: "spell", cost: 3, effect: "draw2", text: "Compre 2 cartas.", rarity: "Incomum", targetMode: "none" },
+    { name: "Força Selvagem", type: "spell", cost: 2, effect: "buff2", text: "Escolha uma criatura sua. Ela recebe +2/+2.", rarity: "Comum", targetMode: "allyCreature" },
+    { name: "Destruição Sombria", type: "spell", cost: 5, effect: "destroy", text: "Destrua uma criatura inimiga.", rarity: "Rara", targetMode: "enemyCreature" },
+    { name: "Selo Lendário", type: "spell", cost: 4, effect: "legendHeal", text: "Escolha uma criatura sua. Ela recebe +1/+1 e você ganha 2 de vida.", rarity: "Mítica", targetMode: "allyCreature" }
+  ]
+};
+
+const state = {
+  player: null,
+  ai: null,
+  currentTurn: "player",
+  phase: "main",
+  landPlayedThisTurn: false,
+  gameOver: false,
+  playerName: "Jogador",
+  newDrawnCardIds: [],
+  newlySummonedIds: [],
+  pendingSpell: null,
+  targetContext: null,
+  blockAssignments: {},
+  selectedAttackerForBlock: null,
+  aiCurrentAttackers: [],
+  mulliganCountPlayer: 0,
+  mulliganCountAI: 0,
+  preGameReady: false
+};
+
+let uidCounter = 1;
+
+function createCard(data) {
+  return {
+    ...JSON.parse(JSON.stringify(data)),
+    uid: uidCounter++,
+    tapped: false,
+    selected: false,
+    summoningSick: data.type === "creature",
+    currentToughness: data.toughness || null,
+    damageMarked: 0
+  };
+}
+
+function shuffle(arr) {
+  const copy = [...arr];
+  for (let i = copy.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [copy[i], copy[j]] = [copy[j], copy[i]];
+  }
+  return copy;
+}
+
+function randomFrom(arr) {
+  return arr[Math.floor(Math.random() * arr.length)];
+}
+
+function buildDeck() {
+  const cards = [];
+  for (let i = 0; i < 24; i++) cards.push(createCard(randomFrom(CARD_POOL.lands)));
+  for (let i = 0; i < 24; i++) cards.push(createCard(randomFrom(CARD_POOL.creatures)));
+  for (let i = 0; i < 12; i++) cards.push(createCard(randomFrom(CARD_POOL.spells)));
+  return shuffle(cards);
+}
+
+function createPlayer(name, isAI = false) {
+  return {
+    name,
+    isAI,
+    life: 20,
+    deck: buildDeck(),
+    hand: [],
+    battlefield: [],
+    lands: [],
+    graveyard: [],
+    manaPool: 0,
+    maxMana: 0
+  };
+}
+
+function log(text) {
+  const logBox = document.getElementById("messageLog");
+  const entry = document.createElement("div");
+  entry.className = "log-entry";
+  entry.textContent = text;
+  logBox.prepend(entry);
+}
+
+function updateInfoText(text) {
+  document.getElementById("infoText").textContent = text;
+}
+
+function translatePhase(phase) {
+  return { main: "Principal", combat: "Combate", end: "Fim" }[phase] || phase;
+}
+
+function showTurnOverlay(name) {
+  const overlay = document.getElementById("turnOverlay");
+  const text = document.getElementById("turnOverlayText");
+  text.textContent = `TURNO DO ${name.toUpperCase()}`;
+  text.classList.remove("turn-overlay-text");
+  void text.offsetWidth;
+  text.classList.add("turn-overlay-text");
+  overlay.classList.remove("hidden");
+  setTimeout(() => overlay.classList.add("hidden"), 1400);
+}
+
+function applyResolutionClass(value) {
+  const game = document.getElementById("game");
+  game.classList.remove("res-1366x768", "res-1600x900", "res-1680x1050", "res-1920x1080");
+  game.classList.add(value);
+  document.getElementById("liveResolutionSelect").value = value;
+  document.getElementById("resolutionSelect").value = value;
+}
+
+function drawCard(player, amount = 1, animateForPlayer = false) {
+  const drawnIds = [];
+  for (let i = 0; i < amount; i++) {
+    if (player.deck.length <= 0) {
+      player.life = 0;
+      log(`${player.name} tentou comprar com deck vazio e perdeu.`);
+      checkWinner();
+      return drawnIds;
+    }
+    const card = player.deck.shift();
+    player.hand.push(card);
+    drawnIds.push(card.uid);
+  }
+  if (animateForPlayer) state.newDrawnCardIds = drawnIds;
+  return drawnIds;
+}
+
+function updateMana(player) {
+  player.maxMana = player.lands.length;
+  player.manaPool = player.lands.filter(l => !l.tapped).length;
+}
+
+function untapAndRefresh(player) {
+  player.lands.forEach(card => card.tapped = false);
+  player.battlefield.forEach(card => {
+    card.tapped = false;
+    card.damageMarked = 0;
+    card.selected = false;
+    card.summoningSick = false;
+  });
+  updateMana(player);
+}
+
+function canPay(player, cost) {
+  return player.lands.filter(l => !l.tapped).length >= cost;
+}
+
+function payCost(player, cost) {
+  let needed = cost;
+  for (const land of player.lands) {
+    if (!land.tapped && needed > 0) {
+      land.tapped = true;
+      needed--;
+    }
+  }
+  updateMana(player);
+}
+
+function findByUid(arr, uid) {
+  return arr.find(card => card.uid === uid);
+}
+
+function removeByUid(arr, uid) {
+  const index = arr.findIndex(card => card.uid === uid);
+  if (index >= 0) return arr.splice(index, 1)[0];
+  return null;
+}
+
+function getCreatureLife(card) {
+  return (card.currentToughness ?? card.toughness) - card.damageMarked;
+}
+
+function getPowerWithAuras(card, owner) {
+  let power = card.power;
+  const auraSource = owner.battlefield.some(c => c.ability === "legendBuff" && c.uid !== card.uid);
+  if (auraSource) power += 1;
+  return power;
+}
+
+function applySpellDamageToCreature(target, amount) {
+  let finalDamage = amount;
+  if (target.ability === "ward") {
+    finalDamage = Math.max(0, amount - 1);
+  }
+  target.damageMarked += finalDamage;
+  triggerDamageFlash(target.uid);
+  triggerSpellImpact(target.uid);
+  return finalDamage;
+}
+
+function triggerClassOnCard(uid, className, duration) {
+  setTimeout(() => {
+    const el = document.querySelector(`[data-uid="${uid}"]`);
+    if (el) {
+      el.classList.add(className);
+      setTimeout(() => el.classList.remove(className), duration);
+    }
+  }, 20);
+}
+
+function triggerDamageFlash(uid) {
+  triggerClassOnCard(uid, "damage-flash", 550);
+}
+
+function triggerCastFlash(uid) {
+  triggerClassOnCard(uid, "cast-flash", 700);
+}
+
+function triggerAttackBurst(uid) {
+  triggerClassOnCard(uid, "attack-burst", 600);
+}
+
+function triggerBlockFlash(uid) {
+  triggerClassOnCard(uid, "block-flash", 650);
+}
+
+function triggerSpellImpact(uid) {
+  triggerClassOnCard(uid, "spell-impact", 750);
+}
+
+function cleanupDeadCreatures() {
+  [state.player, state.ai].forEach(owner => {
+    for (let i = owner.battlefield.length - 1; i >= 0; i--) {
+      const creature = owner.battlefield[i];
+      if (getCreatureLife(creature) <= 0) {
+        owner.graveyard.push(creature);
+        owner.battlefield.splice(i, 1);
+        log(`${creature.name} morreu.`);
+      }
+    }
+  });
+}
+
+function checkWinner() {
+  if (state.gameOver) return true;
+  if (state.player.life <= 0 || state.ai.life <= 0) {
+    state.gameOver = true;
+    let text = "Empate. O caos venceu.";
+    if (state.player.life > 0 && state.ai.life <= 0) text = `${state.player.name} venceu! 🏆`;
+    if (state.ai.life > 0 && state.player.life <= 0) text = `O BOT venceu! 🤖`;
+    document.getElementById("winnerText").textContent = text;
+    document.getElementById("winnerModal").classList.remove("hidden");
+    render();
+    return true;
+  }
+  return false;
+}
+
+function creatureCanAttack(card) {
+  if (card.tapped) return false;
+  if (card.ability === "haste") return true;
+  return !card.summoningSick;
+}
+
+function applyDirectHitTriggers(attacker, attackingPlayer, defendingPlayer) {
+  const dmg = getPowerWithAuras(attacker, attackingPlayer);
+
+  if (attacker.ability === "lifelink") {
+    attackingPlayer.life += dmg;
+    log(`${attackingPlayer.name} ganhou ${dmg} de vida com ${attacker.name}.`);
+  }
+
+  if (attacker.ability === "drawOnHit") {
+    drawCard(attackingPlayer, 1, attackingPlayer === state.player);
+    log(`${attackingPlayer.name} comprou 1 carta com ${attacker.name}.`);
+  }
+
+  if (attacker.ability === "legendDrain") {
+    defendingPlayer.life -= 1;
+    log(`${attacker.name} drenou 1 vida extra de ${defendingPlayer.name}.`);
+  }
+}
+
+function resolveSpell(card, caster, opponent, target = null) {
+  switch (card.effect) {
+    case "damage2":
+    case "damage3":
+    case "damage4": {
+      const amount = Number(card.effect.replace("damage", ""));
+      if (target?.kind === "player") {
+        opponent.life -= amount;
+        log(`${caster.name} causou ${amount} de dano direto em ${opponent.name}.`);
+      } else if (target?.card) {
+        const dealt = applySpellDamageToCreature(target.card, amount);
+        log(`${caster.name} causou ${dealt} de dano em ${target.card.name}.`);
+      }
+      break;
+    }
+    case "heal3":
+      caster.life += 3;
+      log(`${caster.name} ganhou 3 de vida.`);
+      break;
+    case "heal5":
+      caster.life += 5;
+      log(`${caster.name} ganhou 5 de vida.`);
+      break;
+    case "draw2":
+      drawCard(caster, 2, caster === state.player);
+      log(`${caster.name} comprou 2 cartas.`);
+      break;
+    case "buff2":
+      if (target?.card) {
+        target.card.power += 2;
+        target.card.currentToughness += 2;
+        triggerSpellImpact(target.card.uid);
+        log(`${target.card.name} recebeu +2/+2.`);
+      }
+      break;
+    case "destroy":
+      if (target?.card) {
+        const owner = target.owner;
+        triggerSpellImpact(target.card.uid);
+        removeByUid(owner.battlefield, target.card.uid);
+        owner.graveyard.push(target.card);
+        log(`${target.card.name} foi destruída.`);
+      }
+      break;
+    case "legendHeal":
+      if (target?.card) {
+        target.card.power += 1;
+        target.card.currentToughness += 1;
+        caster.life += 2;
+        triggerSpellImpact(target.card.uid);
+        log(`${target.card.name} recebeu +1/+1 e ${caster.name} ganhou 2 de vida.`);
+      }
+      break;
+  }
+}
+
+function openTargetModal(spellCard) {
+  state.pendingSpell = spellCard;
+  document.getElementById("targetTitle").textContent = `Escolha alvo para ${spellCard.name}`;
+  document.getElementById("targetText").textContent = spellCard.text;
+  document.getElementById("targetModal").classList.remove("hidden");
+  render();
+}
+
+function closeTargetModal() {
+  document.getElementById("targetModal").classList.add("hidden");
+  state.pendingSpell = null;
+  render();
+}
+
+function isTargetableCard(card, side) {
+  if (!state.pendingSpell) return false;
+  const mode = state.pendingSpell.targetMode;
+  if (mode === "enemyCreature") return side === "ai";
+  if (mode === "allyCreature") return side === "player";
+  if (mode === "enemyAny") return side === "ai";
+  return false;
+}
+
+function castPlayerSpellWithTarget(spellCard, target) {
+  resolveSpell(spellCard, state.player, state.ai, target);
+  state.player.graveyard.push(spellCard);
+  closeTargetModal();
+  cleanupDeadCreatures();
+  if (checkWinner()) return;
+  render();
+}
+
+function playPlayerCard(uid) {
+  if (state.gameOver || state.currentTurn !== "player" || state.phase !== "main") return;
+  const card = findByUid(state.player.hand, uid);
+  if (!card) return;
+
+  if (card.type === "land") {
+    if (state.landPlayedThisTurn) {
+      log("Você já baixou um terreno neste turno.");
+      return;
+    }
+    removeByUid(state.player.hand, uid);
+    state.player.lands.push(card);
+    state.landPlayedThisTurn = true;
+    updateMana(state.player);
+    log(`Você baixou ${card.name}.`);
+    render();
+    return;
+  }
+
+  if (!canPay(state.player, card.cost)) {
+    log(`Mana insuficiente para ${card.name}.`);
+    return;
+  }
+
+  payCost(state.player, card.cost);
+  removeByUid(state.player.hand, uid);
+
+  if (card.type === "creature") {
+    card.summoningSick = card.ability !== "haste";
+    card.damageMarked = 0;
+    state.player.battlefield.push(card);
+    state.newlySummonedIds = [card.uid];
+    log(`Você conjurou ${card.name}.`);
+    render();
+    triggerCastFlash(card.uid);
+  } else {
+    if (card.targetMode && card.targetMode !== "none") {
+      openTargetModal(card);
+      return;
+    } else {
+      resolveSpell(card, state.player, state.ai, null);
+      state.player.graveyard.push(card);
+      log(`Você conjurou ${card.name}.`);
+    }
+  }
+
+  cleanupDeadCreatures();
+  if (checkWinner()) return;
+  render();
+}
+
+function toggleAttacker(uid) {
+  if (state.gameOver || state.currentTurn !== "player" || state.phase !== "combat") return;
+  const creature = findByUid(state.player.battlefield, uid);
+  if (!creature || !creatureCanAttack(creature)) return;
+  creature.selected = !creature.selected;
+  render();
+}
+
+function goToCombat() {
+  if (state.gameOver || state.currentTurn !== "player" || state.phase !== "main") return;
+  state.phase = "combat";
+  updateInfoText("Selecione suas criaturas para atacar e clique em Atacar.");
+  log("Você entrou na fase de combate.");
+  render();
+}
+
+function chooseBestBlocker(attacker, blockers) {
+  let best = blockers[0];
+  let bestScore = -999;
+  for (const blocker of blockers) {
+    const attackerPower = getPowerWithAuras(attacker, state.ai);
+    const attackerDies = blocker.power >= getCreatureLife(attacker);
+    const blockerLives = getCreatureLife(blocker) > attackerPower;
+    let score = 0;
+    if (attackerDies) score += 6;
+    if (blockerLives) score += 4;
+    score += blocker.power * 0.2;
+    score += blocker.currentToughness * 0.15;
+    if (score > bestScore) {
+      bestScore = score;
+      best = blocker;
+    }
+  }
+  return best;
+}
+
+function resolveCombatBetween(attacker, blocker, attackingPlayer, defendingPlayer) {
+  const atkPower = getPowerWithAuras(attacker, attackingPlayer);
+  blocker.damageMarked += atkPower;
+  attacker.damageMarked += blocker.power;
+  triggerDamageFlash(attacker.uid);
+  triggerDamageFlash(blocker.uid);
+  triggerBlockFlash(attacker.uid);
+  triggerBlockFlash(blocker.uid);
+
+  if (attacker.ability === "trample") {
+    const remaining = atkPower - getCreatureLife(blocker);
+    if (remaining > 0) {
+      defendingPlayer.life -= remaining;
+      log(`${attacker.name} atropelou e causou ${remaining} de dano extra em ${defendingPlayer.name}.`);
+      if (attacker.ability === "lifelink") {
+        attackingPlayer.life += remaining;
+        log(`${attackingPlayer.name} ganhou ${remaining} de vida com ${attacker.name}.`);
+      }
+      if (attacker.ability === "legendDrain") {
+        defendingPlayer.life -= 1;
+        log(`${attacker.name} drenou 1 vida extra de ${defendingPlayer.name}.`);
+      }
+    }
+  }
+}
+
+function resolveDirectHit(attacker, attackingPlayer, defendingPlayer) {
+  const atkPower = getPowerWithAuras(attacker, attackingPlayer);
+  defendingPlayer.life -= atkPower;
+  triggerAttackBurst(attacker.uid);
+  log(`${attacker.name} causou ${atkPower} de dano em ${defendingPlayer.name}.`);
+  applyDirectHitTriggers(attacker, attackingPlayer, defendingPlayer);
+}
+
+function playerAttack() {
+  if (state.gameOver || state.currentTurn !== "player" || state.phase !== "combat") return;
+  const attackers = state.player.battlefield.filter(c => c.selected && creatureCanAttack(c));
+
+  if (attackers.length === 0) {
+    log("Nenhum atacante selecionado.");
+    return;
+  }
+
+  log(`Você atacou com ${attackers.map(c => c.name).join(", ")}.`);
+
+  let availableBlockers = state.ai.battlefield.filter(c => !c.tapped);
+
+  attackers.forEach(attacker => {
+    attacker.tapped = true;
+    attacker.selected = false;
+    triggerAttackBurst(attacker.uid);
+
+    let blocker = null;
+    if (availableBlockers.length > 0 && Math.random() < 0.76) {
+      blocker = chooseBestBlocker(attacker, availableBlockers);
+      availableBlockers = availableBlockers.filter(c => c.uid !== blocker.uid);
+    }
+
+    if (blocker) {
+      log(`${blocker.name} bloqueou ${attacker.name}.`);
+      resolveCombatBetween(attacker, blocker, state.player, state.ai);
+    } else {
+      resolveDirectHit(attacker, state.player, state.ai);
+    }
+  });
+
+  cleanupDeadCreatures();
+  if (checkWinner()) return;
+  state.phase = "main";
+  updateInfoText("Combate resolvido. Você pode continuar ou encerrar o turno.");
+  render();
+}
+
+function endPlayerTurn() {
+  if (state.gameOver || state.currentTurn !== "player") return;
+  state.player.battlefield.forEach(c => c.selected = false);
+  state.phase = "end";
+  log("Você encerrou o turno.");
+  updateInfoText("Agora o bot vai improvisar alguma atrocidade tática.");
+  render();
+  setTimeout(startAITurn, 900);
+}
+
+function startPlayerTurn() {
+  state.currentTurn = "player";
+  state.phase = "main";
+  state.landPlayedThisTurn = false;
+  state.newlySummonedIds = [];
+  state.blockAssignments = {};
+  state.selectedAttackerForBlock = null;
+  state.aiCurrentAttackers = [];
+
+  untapAndRefresh(state.player);
+  drawCard(state.player, 1, true);
+
+  log(`Turno de ${state.player.name}.`);
+  log(`${state.player.name} comprou uma carta.`);
+  updateInfoText("Fase principal. Baixe 1 terreno, jogue cartas e prepare o combate.");
+  showTurnOverlay(state.player.name);
+  render();
+
+  setTimeout(() => {
+    state.newDrawnCardIds = [];
+    render();
+  }, 700);
+}
+
+function startAITurn() {
+  if (state.gameOver) return;
+
+  state.currentTurn = "ai";
+  state.phase = "main";
+  state.landPlayedThisTurn = false;
+  state.newlySummonedIds = [];
+  state.newDrawnCardIds = [];
+  state.blockAssignments = {};
+  state.selectedAttackerForBlock = null;
+  state.aiCurrentAttackers = [];
+
+  untapAndRefresh(state.ai);
+  drawCard(state.ai, 1, false);
+
+  log("Turno do BOT.");
+  updateInfoText("O bot está cozinhando decisões duvidosas.");
+  showTurnOverlay("BOT");
+  render();
+
+  setTimeout(aiMainPhase, 1000);
+}
+
+function resolveAISpell(card, caster, opponent) {
+  switch (card.effect) {
+    case "damage2":
+    case "damage3":
+    case "damage4": {
+      const amount = Number(card.effect.replace("damage", ""));
+      if (opponent.battlefield.length > 0 && Math.random() < 0.7) {
+        let target = opponent.battlefield[0];
+        for (const c of opponent.battlefield) {
+          if (c.power > target.power) target = c;
+        }
+        const dealt = applySpellDamageToCreature(target, amount);
+        log(`BOT causou ${dealt} de dano em ${target.name}.`);
+      } else {
+        opponent.life -= amount;
+        log(`BOT causou ${amount} de dano direto em ${opponent.name}.`);
+      }
+      break;
+    }
+    case "heal3":
+      caster.life += 3;
+      log("BOT ganhou 3 de vida.");
+      break;
+    case "heal5":
+      caster.life += 5;
+      log("BOT ganhou 5 de vida.");
+      break;
+    case "draw2":
+      drawCard(caster, 2, false);
+      log("BOT comprou 2 cartas.");
+      break;
+    case "buff2":
+      if (caster.battlefield.length > 0) {
+        let target = caster.battlefield[0];
+        for (const c of caster.battlefield) {
+          if (c.power > target.power) target = c;
+        }
+        target.power += 2;
+        target.currentToughness += 2;
+        triggerSpellImpact(target.uid);
+        log(`${target.name} do BOT recebeu +2/+2.`);
+      }
+      break;
+    case "destroy":
+      if (opponent.battlefield.length > 0) {
+        let target = opponent.battlefield[0];
+        for (const c of opponent.battlefield) {
+          if (c.power + c.currentToughness > target.power + target.currentToughness) target = c;
+        }
+        triggerSpellImpact(target.uid);
+        removeByUid(opponent.battlefield, target.uid);
+        opponent.graveyard.push(target);
+        log(`BOT destruiu ${target.name}.`);
+      }
+      break;
+    case "legendHeal":
+      if (caster.battlefield.length > 0) {
+        let target = caster.battlefield[0];
+        target.power += 1;
+        target.currentToughness += 1;
+        caster.life += 2;
+        triggerSpellImpact(target.uid);
+        log(`BOT fortaleceu ${target.name} e ganhou 2 de vida.`);
+      }
+      break;
+  }
+}
+
+function aiMainPhase() {
+  if (state.gameOver) return;
+
+  const ai = state.ai;
+  const player = state.player;
+
+  const land = ai.hand.find(c => c.type === "land");
+  if (land && !state.landPlayedThisTurn) {
+    removeByUid(ai.hand, land.uid);
+    ai.lands.push(land);
+    state.landPlayedThisTurn = true;
+    updateMana(ai);
+    log(`BOT baixou ${land.name}.`);
+  }
+
+  let played = true;
+  let safety = 0;
+
+  while (played && safety < 20) {
+    safety++;
+    played = false;
+
+    const playable = ai.hand
+      .filter(c => c.type !== "land" && canPay(ai, c.cost))
+      .sort((a, b) => b.cost - a.cost);
+
+    if (playable.length > 0) {
+      const card = playable[0];
+      payCost(ai, card.cost);
+      removeByUid(ai.hand, card.uid);
+
+      if (card.type === "creature") {
+        card.summoningSick = card.ability !== "haste";
+        ai.battlefield.push(card);
+        state.newlySummonedIds = [card.uid];
+        log(`BOT conjurou ${card.name}.`);
+        render();
+        triggerCastFlash(card.uid);
+      } else {
+        resolveAISpell(card, ai, player);
+        ai.graveyard.push(card);
+        log(`BOT conjurou ${card.name}.`);
+      }
+
+      cleanupDeadCreatures();
+      if (checkWinner()) return;
+      played = true;
+    }
+  }
+
+  render();
+  setTimeout(() => {
+    state.newlySummonedIds = [];
+    render();
+    aiCombatPhase();
+  }, 700);
+}
+
+function aiCombatPhase() {
+  if (state.gameOver) return;
+
+  const aiAttackers = state.ai.battlefield.filter(c => {
+    if (c.tapped) return false;
+    if (c.summoningSick && c.ability !== "haste") return false;
+    if (state.ai.battlefield.length > state.player.battlefield.length) return true;
+    return getPowerWithAuras(c, state.ai) >= 3;
+  });
+
+  if (aiAttackers.length === 0) {
+    log("BOT não atacou.");
+    render();
+    setTimeout(endAITurn, 700);
+    return;
+  }
+
+  aiAttackers.forEach(c => {
+    c.tapped = true;
+    triggerAttackBurst(c.uid);
+  });
+
+  state.aiCurrentAttackers = aiAttackers;
+  state.blockAssignments = {};
+  state.selectedAttackerForBlock = null;
+
+  log(`BOT atacou com ${aiAttackers.map(c => c.name).join(", ")}.`);
+  openBlockModal();
+}
+
+function openBlockModal() {
+  document.getElementById("blockModal").classList.remove("hidden");
+  document.getElementById("blockInfoText").textContent = "Clique em um atacante do BOT e depois em um bloqueador seu. Cada criatura sua bloqueia apenas uma vez.";
+  renderBlockModal();
+}
+
+function closeBlockModal() {
+  document.getElementById("blockModal").classList.add("hidden");
+}
+
+function renderMiniCard(card, options = {}) {
+  const { selected = false, className = "" } = options;
+  const ability = card.abilityLabel ? `<span class="card-tag">${card.abilityLabel}</span>` : "";
+  const rarity = `<span class="card-tag">${card.rarity || "Comum"}</span>`;
+  const legendary = card.legendary ? `<span class="card-tag tag-legendary">Lendária</span>` : "";
+  return `
+    <div class="card board-card ${card.type} ${selected ? "selected" : ""} ${className}" data-mini-uid="${card.uid}">
+      <div class="card-inner">
+        <div class="card-header">
+          <div class="card-name ${card.legendary ? "legendary-name" : ""}">${card.name}</div>
+          <div class="card-cost">${card.type === "land" ? "" : card.cost}</div>
+        </div>
+        <div class="card-art"></div>
+        <div class="card-text">${card.text || ""}</div>
+        <div class="card-bottom">
+          <div class="card-tags-row">${ability}${rarity}${legendary}</div>
+          <div class="card-footer">
+            <span>${card.type.toUpperCase()}</span>
+            <span>${card.type === "creature" ? `${card.power}/${Math.max(0, getCreatureLife(card))}` : "Mágica"}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function renderBlockModal() {
+  const attackBox = document.getElementById("blockAttackers");
+  const defendBox = document.getElementById("blockDefenders");
+  attackBox.innerHTML = "";
+  defendBox.innerHTML = "";
+
+  state.aiCurrentAttackers.forEach(attacker => {
+    const wrap = document.createElement("div");
+    wrap.innerHTML = renderMiniCard(attacker, {
+      selected: state.selectedAttackerForBlock === attacker.uid,
+      className: "block-choice"
+    });
+    const el = wrap.firstElementChild;
+    el.addEventListener("click", () => {
+      state.selectedAttackerForBlock = attacker.uid;
+      renderBlockModal();
+    });
+    attackBox.appendChild(el);
+  });
+
+  const usedBlockers = Object.values(state.blockAssignments);
+  state.player.battlefield.filter(c => !usedBlockers.includes(c.uid)).forEach(blocker => {
+    const wrap = document.createElement("div");
+    wrap.innerHTML = renderMiniCard(blocker, { className: "block-choice" });
+    const el = wrap.firstElementChild;
+    el.addEventListener("click", () => {
+      if (!state.selectedAttackerForBlock) return;
+      state.blockAssignments[state.selectedAttackerForBlock] = blocker.uid;
+      state.selectedAttackerForBlock = null;
+      renderBlockModal();
+    });
+    defendBox.appendChild(el);
+  });
+}
+
+function resolveManualBlocks() {
+  closeBlockModal();
+
+  state.aiCurrentAttackers.forEach(attacker => {
+    const blockerUid = state.blockAssignments[attacker.uid];
+    const blocker = blockerUid ? findByUid(state.player.battlefield, blockerUid) : null;
+
+    if (blocker) {
+      log(`${blocker.name} bloqueou ${attacker.name}.`);
+      resolveCombatBetween(attacker, blocker, state.ai, state.player);
+    } else {
+      resolveDirectHit(attacker, state.ai, state.player);
+    }
+  });
+
+  cleanupDeadCreatures();
+  if (checkWinner()) return;
+
+  render();
+  setTimeout(endAITurn, 800);
+}
+
+function endAITurn() {
+  if (state.gameOver) return;
+  state.phase = "end";
+  log("BOT encerrou o turno.");
+  updateInfoText("Prepare-se para seu próximo turno.");
+  render();
+  setTimeout(startPlayerTurn, 900);
+}
+
+function cardHTML(card, opts = {}) {
+  const {
+    faceDown = false,
+    isBoardCard = false,
+    isSelected = false,
+    tapped = false,
+    summonFlash = false,
+    drawAnim = false,
+    attackReady = false,
+    targetable = false
+  } = opts;
+
+  if (faceDown) {
+    return `
+      <div class="card hand-card card-back">
+        <div class="card-inner">
+          <div class="back-symbol">✦</div>
+        </div>
+      </div>
+    `;
+  }
+
+  const classes = [
+    "card",
+    isBoardCard ? "board-card" : "hand-card",
+    card.type,
+    isSelected ? "selected" : "",
+    tapped ? "tapped" : "",
+    summonFlash ? "summon-flash" : "",
+    drawAnim ? "draw-anim" : "",
+    attackReady ? "attack-ready-ring" : "",
+    targetable ? "targetable" : ""
+  ].join(" ").trim();
+
+  const abilityTag = card.type === "creature" && card.abilityLabel
+    ? `<span class="card-tag">${card.abilityLabel}</span>`
+    : "";
+  const rarityTag = `<span class="card-tag">${card.rarity || "Comum"}</span>`;
+  const legendaryTag = card.legendary ? `<span class="card-tag tag-legendary">Lendária</span>` : "";
+
+  const footerRight =
+    card.type === "creature"
+      ? `${getPowerWithAuras(card, card.ownerRef || state.player)}/${Math.max(0, getCreatureLife(card))}`
+      : card.type === "land"
+        ? "Mana"
+        : "Mágica";
+
+  return `
+    <div class="${classes}" data-uid="${card.uid}">
+      <div class="card-inner">
+        <div class="card-header">
+          <div class="card-name ${card.legendary ? "legendary-name" : ""}">${card.name}</div>
+          <div class="card-cost">${card.type === "land" ? "" : card.cost}</div>
+        </div>
+        <div class="card-art"></div>
+        <div class="card-text">${card.text || ""}</div>
+        <div class="card-bottom">
+          <div class="card-tags-row">${abilityTag}${rarityTag}${legendaryTag}</div>
+          <div class="card-footer">
+            <span>${card.type.toUpperCase()}</span>
+            <span>${footerRight}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function renderHand(containerId, cards, faceDown = false, isPlayer = false) {
+  const container = document.getElementById(containerId);
+  container.innerHTML = "";
+  const count = cards.length;
+  if (count === 0) return;
+
+  const spread = isPlayer ? 24 : 14;
+  const startAngle = -((count - 1) * spread) / 2;
+
+  cards.forEach((card, i) => {
+    const wrap = document.createElement("div");
+    const drawAnim = isPlayer && state.newDrawnCardIds.includes(card.uid);
+    wrap.innerHTML = cardHTML(card, { faceDown, drawAnim });
+    const el = wrap.firstElementChild;
+
+    const offsetX = i * (isPlayer ? 34 : 20) - ((count - 1) * (isPlayer ? 34 : 20)) / 2;
+    const angle = startAngle + i * spread;
+    const y = isPlayer ? Math.abs(angle) * 0.28 : 0;
+
+    el.style.left = `calc(50% - (${getComputedStyle(document.documentElement).getPropertyValue('--card-w').trim()} / 2) + ${offsetX}px)`;
+    el.style.zIndex = 20 + i;
+    el.style.transformOrigin = isPlayer ? "center 220px" : "center -50px";
+    el.style.transform = isPlayer
+      ? `translateY(${y}px) rotate(${angle}deg)`
+      : `translateY(0px) rotate(${angle * 0.22}deg)`;
+
+    if (isPlayer && !faceDown) {
+      el.addEventListener("mouseenter", () => {
+        el.style.transform = `translateY(${y - 16}px) rotate(${angle}deg) scale(1.03)`;
+      });
+      el.addEventListener("mouseleave", () => {
+        el.style.transform = `translateY(${y}px) rotate(${angle}deg) scale(1)`;
+      });
+      el.addEventListener("click", () => playPlayerCard(card.uid));
+    }
+
+    container.appendChild(el);
+  });
+}
+
+function renderBoardRow(containerId, cards, owner, isPlayerCreatures = false, side = "player") {
+  const container = document.getElementById(containerId);
+  container.innerHTML = "";
+
+  cards.forEach(card => {
+    card.ownerRef = owner;
+    const summonFlash = state.newlySummonedIds.includes(card.uid);
+    const attackReady =
+      isPlayerCreatures &&
+      state.currentTurn === "player" &&
+      state.phase === "combat" &&
+      creatureCanAttack(card);
+
+    const targetable = isTargetableCard(card, side);
+
+    const wrap = document.createElement("div");
+    wrap.innerHTML = cardHTML(card, {
+      isBoardCard: true,
+      isSelected: card.selected,
+      tapped: card.tapped,
+      summonFlash,
+      attackReady,
+      targetable
+    });
+
+    const el = wrap.firstElementChild;
+
+    if (isPlayerCreatures) {
+      el.addEventListener("click", () => {
+        if (state.pendingSpell) {
+          if (state.pendingSpell.targetMode === "allyCreature") {
+            castPlayerSpellWithTarget(state.pendingSpell, { card, owner: state.player });
+          } else {
+            toggleAttacker(card.uid);
+          }
+        } else {
+          toggleAttacker(card.uid);
+        }
+      });
+    } else {
+      el.addEventListener("click", () => {
+        if (!state.pendingSpell) return;
+        if (state.pendingSpell.targetMode === "enemyCreature" || state.pendingSpell.targetMode === "enemyAny") {
+          castPlayerSpellWithTarget(state.pendingSpell, { card, owner: state.ai });
+        }
+      });
+    }
+
+    if (state.pendingSpell && state.pendingSpell.targetMode === "enemyAny" && side === "ai") {
+      el.addEventListener("dblclick", () => {
+        castPlayerSpellWithTarget(state.pendingSpell, { card, owner: state.ai });
+      });
+    }
+
+    container.appendChild(el);
+  });
+}
+
+function renderPiles() {
+  document.getElementById("playerDeckCount").textContent = state.player.deck.length;
+  document.getElementById("aiDeckCount").textContent = state.ai.deck.length;
+  document.getElementById("playerGraveCount").textContent = state.player.graveyard.length;
+  document.getElementById("aiGraveCount").textContent = state.ai.graveyard.length;
+  document.getElementById("aiHandCount").textContent = state.ai.hand.length;
+
+  document.getElementById("playerDeckPile").style.opacity = state.player.deck.length > 0 ? "1" : "0.35";
+  document.getElementById("aiDeckPile").style.opacity = state.ai.deck.length > 0 ? "1" : "0.35";
+  document.getElementById("playerGravePile").style.opacity = state.player.graveyard.length > 0 ? "1" : "0.35";
+  document.getElementById("aiGravePile").style.opacity = state.ai.graveyard.length > 0 ? "1" : "0.35";
+}
+
+function render() {
+  if (!state.player || !state.ai) return;
+
+  document.getElementById("playerLife").textContent = state.player.life;
+  document.getElementById("aiLife").textContent = state.ai.life;
+  document.getElementById("playerMana").textContent = state.player.lands.filter(l => !l.tapped).length;
+  document.getElementById("playerManaMax").textContent = state.player.lands.length;
+  document.getElementById("aiMana").textContent = state.ai.lands.filter(l => !l.tapped).length;
+  document.getElementById("aiManaMax").textContent = state.ai.lands.length;
+  document.getElementById("turnText").textContent =
+    state.currentTurn === "player" ? `Turno de ${state.player.name}` : "Turno do BOT";
+  document.getElementById("phaseText").textContent = `Fase: ${translatePhase(state.phase)}`;
+  document.getElementById("playerNameLabel").textContent = state.player.name;
+
+  document.getElementById("combatBtn").disabled =
+    state.currentTurn !== "player" || state.phase !== "main" || state.gameOver || !!state.pendingSpell;
+
+  document.getElementById("attackBtn").disabled =
+    state.currentTurn !== "player" || state.phase !== "combat" || state.gameOver || !!state.pendingSpell;
+
+  document.getElementById("endTurnBtn").disabled =
+    state.currentTurn !== "player" || state.gameOver || !!state.pendingSpell;
+
+  renderHand("playerHandFan", state.player.hand, false, true);
+  renderHand("aiHandFan", state.ai.hand, true, false);
+
+  renderBoardRow("playerBattlefield", state.player.battlefield, state.player, true, "player");
+  renderBoardRow("aiBattlefield", state.ai.battlefield, state.ai, false, "ai");
+  renderBoardRow("playerLands", state.player.lands, state.player, false, "player");
+  renderBoardRow("aiLands", state.ai.lands, state.ai, false, "ai");
+
+  renderPiles();
+}
+
+function refillHandForMulligan(player, targetCount) {
+  player.deck.push(...player.hand);
+  player.hand = [];
+  player.deck = shuffle(player.deck);
+  drawCard(player, targetCount, false);
+}
+
+function aiHandleMulligan() {
+  const lands = state.ai.hand.filter(c => c.type === "land").length;
+  if ((lands <= 1 || lands >= 6) && state.mulliganCountAI < 2) {
+    state.mulliganCountAI++;
+    refillHandForMulligan(state.ai, 7 - state.mulliganCountAI);
+  }
+}
+
+function openMulliganModal() {
+  const modal = document.getElementById("mulliganModal");
+  const preview = document.getElementById("mulliganPreview");
+  preview.innerHTML = "";
+  document.getElementById("mulliganTitle").textContent = `Mão Inicial de ${7 - state.mulliganCountPlayer} cartas`;
+  document.getElementById("mulliganText").textContent =
+    `Você quer manter esta mão ou fazer mulligan? Mulligans usados: ${state.mulliganCountPlayer}`;
+
+  state.player.hand.forEach(card => {
+    const wrap = document.createElement("div");
+    wrap.innerHTML = cardHTML(card, { isBoardCard: true });
+    preview.appendChild(wrap.firstElementChild);
+  });
+
+  document.getElementById("mulliganBtn").disabled = state.player.hand.length <= 4;
+  modal.classList.remove("hidden");
+}
+
+function finalizePregame() {
+  document.getElementById("mulliganModal").classList.add("hidden");
+  state.preGameReady = true;
+  untapAndRefresh(state.player);
+  untapAndRefresh(state.ai);
+  document.getElementById("messageLog").innerHTML = "";
+  log(`A partida começou. ${state.player.name} entrou na arena.`);
+  log(`${state.player.name} começa com ${state.player.hand.length} cartas.`);
+  updateInfoText("Fase principal. Baixe um terreno e organize sua jogada.");
+  render();
+  showTurnOverlay(state.player.name);
+}
+
+function setupPregameHands() {
+  state.player.hand = [];
+  state.ai.hand = [];
+  state.player.deck = shuffle(state.player.deck);
+  state.ai.deck = shuffle(state.ai.deck);
+  drawCard(state.player, 7, false);
+  drawCard(state.ai, 7, false);
+  aiHandleMulligan();
+  openMulliganModal();
+  render();
+}
+
+function startGame() {
+  uidCounter = 1;
+  state.gameOver = false;
+  state.currentTurn = "player";
+  state.phase = "main";
+  state.landPlayedThisTurn = false;
+  state.newDrawnCardIds = [];
+  state.newlySummonedIds = [];
+  state.pendingSpell = null;
+  state.blockAssignments = {};
+  state.selectedAttackerForBlock = null;
+  state.aiCurrentAttackers = [];
+  state.mulliganCountPlayer = 0;
+  state.mulliganCountAI = 0;
+  state.preGameReady = false;
+
+  state.player = createPlayer(state.playerName, false);
+  state.ai = createPlayer("BOT", true);
+
+  document.getElementById("messageLog").innerHTML = "";
+  document.getElementById("winnerModal").classList.add("hidden");
+  document.getElementById("targetModal").classList.add("hidden");
+  document.getElementById("blockModal").classList.add("hidden");
+
+  setupPregameHands();
+}
+
+document.getElementById("startGameBtn").addEventListener("click", () => {
+  const input = document.getElementById("playerNameInput");
+  const name = input.value.trim();
+  state.playerName = name || "Jogador";
+  applyResolutionClass(document.getElementById("resolutionSelect").value);
+  document.getElementById("startScreen").classList.add("hidden");
+  startGame();
+});
+
+document.getElementById("playerNameInput").addEventListener("keydown", e => {
+  if (e.key === "Enter") document.getElementById("startGameBtn").click();
+});
+
+document.getElementById("keepHandBtn").addEventListener("click", finalizePregame);
+
+document.getElementById("mulliganBtn").addEventListener("click", () => {
+  state.mulliganCountPlayer++;
+  refillHandForMulligan(state.player, 7 - state.mulliganCountPlayer);
+  openMulliganModal();
+  render();
+});
+
+document.getElementById("resolutionSelect").addEventListener("change", e => {
+  applyResolutionClass(e.target.value);
+});
+
+document.getElementById("liveResolutionSelect").addEventListener("change", e => {
+  applyResolutionClass(e.target.value);
+});
+
+document.getElementById("combatBtn").addEventListener("click", goToCombat);
+document.getElementById("attackBtn").addEventListener("click", playerAttack);
+
+document.getElementById("endTurnBtn").addEventListener("click", () => {
+  if (state.currentTurn !== "player" || state.gameOver || !state.preGameReady) return;
+  endPlayerTurn();
+});
+
+document.getElementById("restartBtn").addEventListener("click", () => {
+  document.getElementById("winnerModal").classList.add("hidden");
+  startGame();
+});
+
+document.getElementById("cancelTargetBtn").addEventListener("click", () => {
+  if (!state.pendingSpell) return;
+  state.player.hand.push(state.pendingSpell);
+  state.pendingSpell = null;
+  updateMana(state.player);
+  document.getElementById("targetModal").classList.add("hidden");
+  render();
+});
+
+document.getElementById("confirmBlocksBtn").addEventListener("click", resolveManualBlocks);
+
+/* Clique duplo no avatar inimigo para mágicas enemyAny irem no jogador */
+document.querySelector(".enemy-avatar").addEventListener("dblclick", () => {
+  if (!state.pendingSpell) return;
+  if (state.pendingSpell.targetMode === "enemyAny") {
+    castPlayerSpellWithTarget(state.pendingSpell, { kind: "player" });
+  }
+});
+
+/* Estado visual inicial */
+applyResolutionClass("res-1680x1050");
