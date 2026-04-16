@@ -2,7 +2,7 @@
   <div id="startScreen" class="start-screen">
     <div class="start-box">
       <h1>Feitiçaria</h1>
-      <p>Agora com mulligan, resolução selecionável e uma mesa que finalmente parou de querer virar pergaminho vertical.</p>
+      <p>Não é Magic ein.</p>
       <style>
 
         * {
@@ -14,10 +14,10 @@
   --table-min-height: 720px;
   --card-w: 108px;
   --card-h: 150px;
-  --hand-height: 205px;
-  --enemy-hand-height: 108px;
-  --board-row-min: 120px;
-  --creature-row-min: 138px;
+  --hand-card-w: 112px;
+  --hand-card-h: 156px;
+  --board-row-min: 118px;
+  --creature-row-min: 136px;
   --font-base: 15px;
   --font-title: 26px;
 }
@@ -50,10 +50,10 @@ body {
   --table-min-height: 610px;
   --card-w: 94px;
   --card-h: 132px;
-  --hand-height: 175px;
-  --enemy-hand-height: 92px;
-  --board-row-min: 104px;
-  --creature-row-min: 120px;
+  --hand-card-w: 100px;
+  --hand-card-h: 140px;
+  --board-row-min: 100px;
+  --creature-row-min: 116px;
   --font-base: 14px;
   --font-title: 22px;
 }
@@ -63,10 +63,10 @@ body {
   --table-min-height: 680px;
   --card-w: 100px;
   --card-h: 140px;
-  --hand-height: 190px;
-  --enemy-hand-height: 100px;
-  --board-row-min: 112px;
-  --creature-row-min: 130px;
+  --hand-card-w: 106px;
+  --hand-card-h: 148px;
+  --board-row-min: 108px;
+  --creature-row-min: 126px;
   --font-base: 14px;
   --font-title: 24px;
 }
@@ -76,10 +76,10 @@ body {
   --table-min-height: 720px;
   --card-w: 108px;
   --card-h: 150px;
-  --hand-height: 205px;
-  --enemy-hand-height: 108px;
-  --board-row-min: 120px;
-  --creature-row-min: 138px;
+  --hand-card-w: 112px;
+  --hand-card-h: 156px;
+  --board-row-min: 118px;
+  --creature-row-min: 136px;
   --font-base: 15px;
   --font-title: 26px;
 }
@@ -89,10 +89,10 @@ body {
   --table-min-height: 760px;
   --card-w: 114px;
   --card-h: 158px;
-  --hand-height: 215px;
-  --enemy-hand-height: 112px;
-  --board-row-min: 124px;
-  --creature-row-min: 144px;
+  --hand-card-w: 118px;
+  --hand-card-h: 164px;
+  --board-row-min: 122px;
+  --creature-row-min: 142px;
   --font-base: 16px;
   --font-title: 28px;
 }
@@ -101,41 +101,69 @@ body {
   display: none !important;
 }
 
-/* Start */
-.start-screen {
+/* Start / overlays */
+.start-screen,
+.turn-overlay,
+.overlay-modal,
+.winner-modal {
   position: fixed;
   inset: 0;
-  background:
-    radial-gradient(circle at center, rgba(255,220,140,0.10), transparent 30%),
-    rgba(6, 10, 18, 0.92);
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+.start-screen {
+  background:
+    radial-gradient(circle at center, rgba(255,220,140,0.10), transparent 30%),
+    rgba(6, 10, 18, 0.92);
   z-index: 3000;
 }
 
-.start-box {
-  width: min(92%, 620px);
+.turn-overlay {
+  background: rgba(8, 12, 18, 0.55);
+  z-index: 2500;
+  pointer-events: none;
+}
+
+.overlay-modal,
+.winner-modal {
+  background: rgba(8, 12, 18, 0.78);
+  z-index: 2600;
+}
+
+.start-box,
+.overlay-box,
+.winner-box {
   background: linear-gradient(180deg, #1a2435, #0f1622);
   border: 1px solid rgba(255,255,255,0.10);
   border-radius: 24px;
-  padding: 28px;
+  padding: 24px;
   text-align: center;
   box-shadow: 0 30px 70px rgba(0,0,0,0.42);
 }
 
-.start-box h1 {
-  margin: 0 0 10px;
-  color: #f2d795;
-  letter-spacing: 2px;
-  font-size: 38px;
+.start-box {
+  width: min(92%, 620px);
 }
 
-.start-box p {
-  color: #d7deea;
-  line-height: 1.5;
-  margin-bottom: 18px;
-  font-size: 17px;
+.overlay-box,
+.winner-box {
+  width: min(92%, 540px);
+}
+
+.wide-box {
+  width: min(96%, 1100px);
+}
+
+.giant-card-box {
+  width: min(96%, 760px);
+}
+
+.start-box h1,
+.overlay-box h2,
+.winner-box h2 {
+  margin-top: 0;
 }
 
 .form-row {
@@ -143,7 +171,8 @@ body {
   margin-bottom: 14px;
 }
 
-.form-row label {
+.form-row label,
+.resolution-box label {
   display: block;
   margin-bottom: 6px;
   font-weight: 900;
@@ -170,29 +199,6 @@ body {
   box-shadow: 0 0 0 3px rgba(133,168,255,0.20);
 }
 
-/* Overlays */
-.turn-overlay,
-.overlay-modal,
-.winner-modal {
-  position: fixed;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.turn-overlay {
-  background: rgba(8, 12, 18, 0.55);
-  z-index: 2500;
-  pointer-events: none;
-}
-
-.overlay-modal,
-.winner-modal {
-  background: rgba(8, 12, 18, 0.78);
-  z-index: 2600;
-}
-
 .turn-overlay-text {
   font-size: clamp(42px, 6vw, 96px);
   font-weight: 900;
@@ -211,31 +217,16 @@ body {
   100% { opacity: 0; transform: scale(1.08); }
 }
 
-.overlay-box,
-.winner-box {
-  width: min(92%, 520px);
-  background: linear-gradient(180deg, #1e2940, #121a28);
-  border-radius: 22px;
-  border: 1px solid rgba(255,255,255,0.10);
-  padding: 22px;
-  text-align: center;
-  box-shadow: 0 25px 50px rgba(0,0,0,0.35);
-}
-
-.wide-box {
-  width: min(96%, 1100px);
-}
-
-.small-note {
-  font-size: 13px;
-  color: #cfd8eb;
-}
-
 .modal-actions {
   margin-top: 14px;
   display: flex;
   gap: 10px;
   justify-content: center;
+}
+
+.small-note {
+  font-size: 13px;
+  color: #cfd8eb;
 }
 
 .block-columns {
@@ -260,10 +251,21 @@ body {
   justify-content: center;
 }
 
-/* Top HUD */
+.card-action-preview {
+  display: flex;
+  justify-content: center;
+  margin: 14px 0 10px;
+}
+
+.card-action-text {
+  color: #d2dcec;
+  line-height: 1.45;
+}
+
+/* HUD */
 .hud-top {
   display: grid;
-  grid-template-columns: 230px 1fr 420px;
+  grid-template-columns: 230px 1fr 430px;
   gap: 10px;
   margin-bottom: 10px;
 }
@@ -330,13 +332,6 @@ body {
   align-items: center;
 }
 
-.resolution-box label {
-  display: block;
-  font-weight: 900;
-  margin-bottom: 6px;
-  color: #f1d48f;
-}
-
 .action-toolbar {
   display: flex;
   gap: 10px;
@@ -344,11 +339,18 @@ body {
   flex-wrap: wrap;
 }
 
-.action-btn {
+.action-btn,
+#startGameBtn,
+#keepHandBtn,
+#mulliganBtn,
+#confirmBlocksBtn,
+#confirmCardUseBtn,
+#cancelCardUseBtn,
+#restartBtn {
   border: none;
   outline: none;
   border-radius: 16px;
-  padding: 13px 16px;
+  padding: 12px 18px;
   cursor: pointer;
   font-weight: 900;
   letter-spacing: 0.3px;
@@ -357,14 +359,23 @@ body {
   min-width: 120px;
   box-shadow: 0 8px 20px rgba(83, 106, 196, 0.35);
   transition: transform 0.14s, opacity 0.14s, box-shadow 0.14s, filter 0.14s;
+  background: linear-gradient(135deg, #4f81ff, #7c5dff);
 }
 
-.action-btn:hover {
+.action-btn:hover,
+#startGameBtn:hover,
+#keepHandBtn:hover,
+#mulliganBtn:hover,
+#confirmBlocksBtn:hover,
+#confirmCardUseBtn:hover,
+#cancelCardUseBtn:hover,
+#restartBtn:hover {
   transform: translateY(-2px) scale(1.03);
   filter: brightness(1.06);
 }
 
-.action-btn:disabled {
+.action-btn:disabled,
+#mulliganBtn:disabled {
   opacity: 0.42;
   cursor: not-allowed;
   transform: none;
@@ -372,18 +383,9 @@ body {
   filter: none;
 }
 
-.action-blue {
-  background: linear-gradient(135deg, #4f81ff, #5cb5ff);
-}
-
-.action-red {
-  background: linear-gradient(135deg, #ff5b5b, #ff8d42);
-}
-
-.action-gold {
-  background: linear-gradient(135deg, #c8911f, #ffcf56);
-  color: #2a1d05;
-}
+.action-blue { background: linear-gradient(135deg, #4f81ff, #5cb5ff); }
+.action-red { background: linear-gradient(135deg, #ff5b5b, #ff8d42); }
+.action-gold { background: linear-gradient(135deg, #c8911f, #ffcf56); color: #2a1d05; }
 
 /* Board */
 .main-board {
@@ -407,9 +409,7 @@ body {
   text-align: center;
 }
 
-.panel-block.compact {
-  padding: 8px;
-}
+.panel-block.compact { padding: 8px; }
 
 .panel-title {
   color: #f1d48f;
@@ -462,13 +462,8 @@ body {
   background: linear-gradient(180deg, #432267, #221232);
 }
 
-.enemy-pile::before {
-  background: linear-gradient(180deg, #5e2f92, #2b173f);
-}
-
-.enemy-pile::after {
-  background: linear-gradient(180deg, #7a3ac0, #3b1e57);
-}
+.enemy-pile::before { background: linear-gradient(180deg, #5e2f92, #2b173f); }
+.enemy-pile::after { background: linear-gradient(180deg, #7a3ac0, #3b1e57); }
 
 .grave-pile {
   background: linear-gradient(180deg, #5d503c, #2b251b);
@@ -480,10 +475,6 @@ body {
     radial-gradient(circle at 50% 30%, rgba(255,255,255,0.10), transparent 35%),
     linear-gradient(180deg, #432267 0%, #211131 100%);
   border: 2px solid rgba(255,255,255,0.09);
-}
-
-.hidden-hand-box {
-  padding: 2px 0;
 }
 
 .tips-box p {
@@ -554,13 +545,8 @@ body {
   border: 2px solid rgba(255,255,255,0.14);
 }
 
-.player-avatar {
-  background: linear-gradient(135deg, #467cff, #6ec7ff);
-}
-
-.enemy-avatar {
-  background: linear-gradient(135deg, #8a3fff, #ff6bb6);
-}
+.player-avatar { background: linear-gradient(135deg, #467cff, #6ec7ff); }
+.enemy-avatar { background: linear-gradient(135deg, #8a3fff, #ff6bb6); }
 
 .player-meta {
   display: flex;
@@ -575,6 +561,44 @@ body {
   font-size: 19px;
   font-weight: 900;
   color: #fff2cc;
+}
+
+.player-dashboard {
+  margin-bottom: 8px;
+}
+
+.player-card-ui {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: 18px;
+  background: linear-gradient(135deg, rgba(39,54,92,0.92), rgba(20,30,49,0.92));
+  border: 1px solid rgba(255,255,255,0.08);
+  box-shadow: 0 10px 20px rgba(0,0,0,0.22);
+}
+
+.ui-big-name {
+  font-size: 20px;
+  font-weight: 900;
+  color: #fff2cc;
+  min-width: 160px;
+}
+
+.ui-stat-pill {
+  padding: 8px 12px;
+  border-radius: 999px;
+  font-weight: 900;
+  font-size: 15px;
+  border: 1px solid rgba(255,255,255,0.12);
+}
+
+.hp-pill {
+  background: linear-gradient(135deg, rgba(165,40,40,0.95), rgba(255,105,105,0.95));
+}
+
+.mana-pill {
+  background: linear-gradient(135deg, rgba(44,88,180,0.95), rgba(92,174,255,0.95));
 }
 
 .zone-title {
@@ -633,29 +657,31 @@ body {
     radial-gradient(circle at center, rgba(255,255,255,0.04), transparent 40%);
 }
 
-.player-bottom-info {
-  margin-top: 4px;
+/* Player hand row linear */
+.player-hand-row {
+  min-height: calc(var(--hand-card-h) + 10px);
+  border-radius: 16px;
+  padding: 8px;
+  display: flex;
+  gap: 8px;
+  align-items: flex-end;
+  overflow-x: auto;
+  overflow-y: hidden;
+  background: rgba(9, 18, 28, 0.30);
+  border: 1px solid rgba(255,255,255,0.05);
+  scrollbar-width: thin;
 }
 
-/* Hands */
-.player-hand-fan,
+.player-hand-row .card {
+  flex: 0 0 auto;
+}
+
 .opponent-hand-fan {
   position: relative;
   width: 100%;
-  overflow: visible;
+  min-height: 96px;
   display: flex;
   justify-content: center;
-}
-
-.player-hand-fan {
-  height: var(--hand-height);
-  align-items: flex-end;
-}
-
-.opponent-hand-fan {
-  height: var(--enemy-hand-height);
-  align-items: flex-start;
-  margin-bottom: 4px;
 }
 
 /* Cards */
@@ -673,12 +699,21 @@ body {
   position: relative;
 }
 
+.player-hand-row .card {
+  width: var(--hand-card-w);
+  height: var(--hand-card-h);
+}
+
 .hand-card {
-  position: absolute;
+  position: relative;
 }
 
 .board-card {
   position: relative;
+}
+
+.opponent-hand-fan .card {
+  position: absolute;
 }
 
 .card:hover {
@@ -747,7 +782,6 @@ body {
   font-size: 12px;
   font-weight: 900;
   color: #111111;
-  text-shadow: none;
 }
 
 .legendary-name {
@@ -836,6 +870,12 @@ body {
   color: white;
 }
 
+/* Status highlights */
+.stat-boost {
+  color: #56a8ff !important;
+  text-shadow: 0 0 8px rgba(86,168,255,0.35);
+}
+
 .card.selected {
   box-shadow:
     0 0 0 3px rgba(255,230,100,0.40),
@@ -868,33 +908,19 @@ body {
     0 0 18px rgba(78,145,255,0.18);
 }
 
-.summon-flash {
-  animation: summonFlash 1s ease;
+.card.giant-preview {
+  width: min(340px, 42vw);
+  height: auto;
+  aspect-ratio: 0.72;
 }
 
-.draw-anim {
-  animation: drawPop 0.6s ease;
-}
-
-.attack-burst {
-  animation: attackBurst 0.6s ease;
-}
-
-.damage-flash {
-  animation: damageFlash 0.55s ease;
-}
-
-.cast-flash {
-  animation: castFlash 0.7s ease;
-}
-
-.block-flash {
-  animation: blockFlash 0.65s ease;
-}
-
-.spell-impact {
-  animation: spellImpact 0.75s ease;
-}
+.summon-flash { animation: summonFlash 1s ease; }
+.draw-anim { animation: drawPop 0.6s ease; }
+.attack-burst { animation: attackBurst 0.6s ease; }
+.damage-flash { animation: damageFlash 0.55s ease; }
+.cast-flash { animation: castFlash 0.7s ease; }
+.block-flash { animation: blockFlash 0.65s ease; }
+.spell-impact { animation: spellImpact 0.75s ease; }
 
 @keyframes summonFlash {
   0% { box-shadow: 0 0 0 0 rgba(255,210,100,0.0); filter: brightness(1.4); }
@@ -999,7 +1025,12 @@ body {
   .action-btn {
     flex: 1 1 150px;
   }
+
+  .player-card-ui {
+    flex-wrap: wrap;
+  }
 }
+        
       </style>
 
       <div class="form-row">
@@ -1034,15 +1065,7 @@ body {
         <button id="keepHandBtn">Manter Mão</button>
         <button id="mulliganBtn">Mulligan</button>
       </div>
-      <p class="small-note">Cada mulligan reduz sua mão inicial em 1 carta. Sim, escolhas têm consequências. Que novidade.</p>
-    </div>
-  </div>
-
-  <div id="targetModal" class="overlay-modal hidden">
-    <div class="overlay-box">
-      <h2 id="targetTitle">Escolha um alvo</h2>
-      <p id="targetText">Selecione um alvo válido na mesa.</p>
-      <button id="cancelTargetBtn">Cancelar</button>
+      <p class="small-note">Cada mulligan reduz sua mão em 1 carta. A vida é cheia dessas crueldades.</p>
     </div>
   </div>
 
@@ -1066,6 +1089,18 @@ body {
     </div>
   </div>
 
+  <div id="cardActionModal" class="overlay-modal hidden">
+    <div class="overlay-box giant-card-box">
+      <h2 id="cardActionTitle">Carta Selecionada</h2>
+      <div id="cardActionPreview" class="card-action-preview"></div>
+      <p id="cardActionText" class="card-action-text">Leia a carta e escolha o que fazer.</p>
+      <div class="modal-actions">
+        <button id="confirmCardUseBtn">Usar</button>
+        <button id="cancelCardUseBtn">Cancelar</button>
+      </div>
+    </div>
+  </div>
+
   <div id="winnerModal" class="winner-modal hidden">
     <div class="winner-box">
       <h2 id="winnerText">Vitória!</h2>
@@ -1076,13 +1111,13 @@ body {
   <div class="hud-top">
     <div class="brand-box">
       <div class="logo">Feitiçaria</div>
-      <div class="subtitle">V6 Wide Table</div>
+      <div class="subtitle">V7 Card Focus</div>
     </div>
 
     <div class="status-box">
       <div id="turnText">Turno do Jogador</div>
       <div id="phaseText">Fase: Principal</div>
-      <div id="infoText">Baixe terrenos, jogue cartas e tente fazer isso parecer planejamento.</div>
+      <div id="infoText">Clique numa carta da mão para abrir a visualização grande e decidir o próximo desastre.</div>
     </div>
 
     <div class="top-right-box">
@@ -1156,25 +1191,22 @@ body {
       </div>
 
       <div class="player-zone">
+        <div class="player-dashboard">
+          <div class="player-card-ui">
+            <div class="ui-big-name" id="playerNameLabel">Jogador</div>
+            <div class="ui-stat-pill hp-pill">HP <span id="playerLife">20</span></div>
+            <div class="ui-stat-pill mana-pill">Mana <span id="playerMana">0</span>/<span id="playerManaMax">0</span></div>
+          </div>
+        </div>
+
         <div class="zone-title">Criaturas</div>
         <div id="playerBattlefield" class="board-row creature-row player-creatures"></div>
 
         <div class="zone-title">Terrenos</div>
         <div id="playerLands" class="board-row land-row player-lands"></div>
 
-        <div class="player-bottom-info">
-          <div class="player-info">
-            <div class="avatar player-avatar">YOU</div>
-            <div class="player-meta">
-              <div id="playerNameLabel" class="player-name">Jogador</div>
-              <div>Vida: <span id="playerLife">20</span></div>
-              <div>Mana: <span id="playerMana">0</span>/<span id="playerManaMax">0</span></div>
-            </div>
-          </div>
-        </div>
-
         <div class="zone-title">Sua Mão</div>
-        <div id="playerHandFan" class="player-hand-fan"></div>
+        <div id="playerHandFan" class="player-hand-row"></div>
       </div>
     </section>
 
@@ -1193,10 +1225,10 @@ body {
 
       <div class="panel-block tips-box">
         <div class="panel-title">Regras rápidas</div>
-        <p>• 1 terreno por turno.</p>
-        <p>• Mulligan disponível no início.</p>
-        <p>• Bloqueio do jogador é manual.</p>
-        <p>• Algumas mágicas pedem alvo.</p>
+        <p>• Clique na carta para abrir no centro.</p>
+        <p>• Use ou cancele por ali.</p>
+        <p>• Feitiços destacam alvos válidos.</p>
+        <p>• Buffs ficam azuis nos status.</p>
       </div>
     </aside>
   </div>
@@ -1255,14 +1287,16 @@ const state = {
   playerName: "Jogador",
   newDrawnCardIds: [],
   newlySummonedIds: [],
-  pendingSpell: null,
-  targetContext: null,
   blockAssignments: {},
   selectedAttackerForBlock: null,
   aiCurrentAttackers: [],
   mulliganCountPlayer: 0,
   mulliganCountAI: 0,
-  preGameReady: false
+  preGameReady: false,
+  selectedHandCard: null,
+  pendingActionCard: null,
+  targetingMode: false,
+  tempBoostedIds: new Set()
 };
 
 let uidCounter = 1;
@@ -1419,17 +1453,6 @@ function getPowerWithAuras(card, owner) {
   return power;
 }
 
-function applySpellDamageToCreature(target, amount) {
-  let finalDamage = amount;
-  if (target.ability === "ward") {
-    finalDamage = Math.max(0, amount - 1);
-  }
-  target.damageMarked += finalDamage;
-  triggerDamageFlash(target.uid);
-  triggerSpellImpact(target.uid);
-  return finalDamage;
-}
-
 function triggerClassOnCard(uid, className, duration) {
   setTimeout(() => {
     const el = document.querySelector(`[data-uid="${uid}"]`);
@@ -1440,25 +1463,11 @@ function triggerClassOnCard(uid, className, duration) {
   }, 20);
 }
 
-function triggerDamageFlash(uid) {
-  triggerClassOnCard(uid, "damage-flash", 550);
-}
-
-function triggerCastFlash(uid) {
-  triggerClassOnCard(uid, "cast-flash", 700);
-}
-
-function triggerAttackBurst(uid) {
-  triggerClassOnCard(uid, "attack-burst", 600);
-}
-
-function triggerBlockFlash(uid) {
-  triggerClassOnCard(uid, "block-flash", 650);
-}
-
-function triggerSpellImpact(uid) {
-  triggerClassOnCard(uid, "spell-impact", 750);
-}
+function triggerDamageFlash(uid) { triggerClassOnCard(uid, "damage-flash", 550); }
+function triggerCastFlash(uid) { triggerClassOnCard(uid, "cast-flash", 700); }
+function triggerAttackBurst(uid) { triggerClassOnCard(uid, "attack-burst", 600); }
+function triggerBlockFlash(uid) { triggerClassOnCard(uid, "block-flash", 650); }
+function triggerSpellImpact(uid) { triggerClassOnCard(uid, "spell-impact", 750); }
 
 function cleanupDeadCreatures() {
   [state.player, state.ai].forEach(owner => {
@@ -1513,6 +1522,14 @@ function applyDirectHitTriggers(attacker, attackingPlayer, defendingPlayer) {
   }
 }
 
+function markBoosted(card) {
+  state.tempBoostedIds.add(card.uid);
+  setTimeout(() => {
+    state.tempBoostedIds.delete(card.uid);
+    render();
+  }, 1800);
+}
+
 function resolveSpell(card, caster, opponent, target = null) {
   switch (card.effect) {
     case "damage2":
@@ -1523,8 +1540,14 @@ function resolveSpell(card, caster, opponent, target = null) {
         opponent.life -= amount;
         log(`${caster.name} causou ${amount} de dano direto em ${opponent.name}.`);
       } else if (target?.card) {
-        const dealt = applySpellDamageToCreature(target.card, amount);
-        log(`${caster.name} causou ${dealt} de dano em ${target.card.name}.`);
+        let finalDamage = amount;
+        if (target.card.ability === "ward") {
+          finalDamage = Math.max(0, amount - 1);
+        }
+        target.card.damageMarked += finalDamage;
+        triggerDamageFlash(target.card.uid);
+        triggerSpellImpact(target.card.uid);
+        log(`${caster.name} causou ${finalDamage} de dano em ${target.card.name}.`);
       }
       break;
     }
@@ -1544,6 +1567,7 @@ function resolveSpell(card, caster, opponent, target = null) {
       if (target?.card) {
         target.card.power += 2;
         target.card.currentToughness += 2;
+        markBoosted(target.card);
         triggerSpellImpact(target.card.uid);
         log(`${target.card.name} recebeu +2/+2.`);
       }
@@ -1562,6 +1586,7 @@ function resolveSpell(card, caster, opponent, target = null) {
         target.card.power += 1;
         target.card.currentToughness += 1;
         caster.life += 2;
+        markBoosted(target.card);
         triggerSpellImpact(target.card.uid);
         log(`${target.card.name} recebeu +1/+1 e ${caster.name} ganhou 2 de vida.`);
       }
@@ -1569,84 +1594,120 @@ function resolveSpell(card, caster, opponent, target = null) {
   }
 }
 
-function openTargetModal(spellCard) {
-  state.pendingSpell = spellCard;
-  document.getElementById("targetTitle").textContent = `Escolha alvo para ${spellCard.name}`;
-  document.getElementById("targetText").textContent = spellCard.text;
-  document.getElementById("targetModal").classList.remove("hidden");
+function openCardActionModal(card) {
+  state.selectedHandCard = card;
+  const modal = document.getElementById("cardActionModal");
+  const preview = document.getElementById("cardActionPreview");
+  preview.innerHTML = "";
+
+  const wrap = document.createElement("div");
+  wrap.innerHTML = cardHTML(card, { isBoardCard: true, giant: true });
+  const el = wrap.firstElementChild;
+  el.classList.add("giant-preview");
+  preview.appendChild(el);
+
+  document.getElementById("cardActionTitle").textContent = card.name;
+  document.getElementById("cardActionText").textContent = card.text || "Carta sem texto. Parabéns aos designers minimalistas.";
+  modal.classList.remove("hidden");
+}
+
+function closeCardActionModal() {
+  document.getElementById("cardActionModal").classList.add("hidden");
+  state.selectedHandCard = null;
+}
+
+function cancelCardAction() {
+  closeCardActionModal();
+  state.pendingActionCard = null;
+  state.targetingMode = false;
   render();
 }
 
-function closeTargetModal() {
-  document.getElementById("targetModal").classList.add("hidden");
-  state.pendingSpell = null;
+function beginTargetSelection(card) {
+  state.pendingActionCard = card;
+  state.targetingMode = true;
+  closeCardActionModal();
+  updateInfoText(`Selecione um alvo para ${card.name}.`);
   render();
 }
 
-function isTargetableCard(card, side) {
-  if (!state.pendingSpell) return false;
-  const mode = state.pendingSpell.targetMode;
-  if (mode === "enemyCreature") return side === "ai";
-  if (mode === "allyCreature") return side === "player";
-  if (mode === "enemyAny") return side === "ai";
-  return false;
-}
-
-function castPlayerSpellWithTarget(spellCard, target) {
-  resolveSpell(spellCard, state.player, state.ai, target);
-  state.player.graveyard.push(spellCard);
-  closeTargetModal();
-  cleanupDeadCreatures();
-  if (checkWinner()) return;
-  render();
-}
-
-function playPlayerCard(uid) {
-  if (state.gameOver || state.currentTurn !== "player" || state.phase !== "main") return;
-  const card = findByUid(state.player.hand, uid);
+function confirmCardUse() {
+  const card = state.selectedHandCard;
   if (!card) return;
+
+  if (state.currentTurn !== "player" || state.phase !== "main" || state.gameOver) return;
+  if (!canPay(state.player, card.type === "land" ? 0 : card.cost)) {
+    log(`Mana insuficiente para ${card.name}.`);
+    closeCardActionModal();
+    return;
+  }
 
   if (card.type === "land") {
     if (state.landPlayedThisTurn) {
       log("Você já baixou um terreno neste turno.");
+      closeCardActionModal();
       return;
     }
-    removeByUid(state.player.hand, uid);
+    removeByUid(state.player.hand, card.uid);
     state.player.lands.push(card);
     state.landPlayedThisTurn = true;
     updateMana(state.player);
     log(`Você baixou ${card.name}.`);
+    closeCardActionModal();
     render();
     return;
   }
 
-  if (!canPay(state.player, card.cost)) {
-    log(`Mana insuficiente para ${card.name}.`);
-    return;
-  }
-
-  payCost(state.player, card.cost);
-  removeByUid(state.player.hand, uid);
-
   if (card.type === "creature") {
+    payCost(state.player, card.cost);
+    removeByUid(state.player.hand, card.uid);
     card.summoningSick = card.ability !== "haste";
     card.damageMarked = 0;
     state.player.battlefield.push(card);
     state.newlySummonedIds = [card.uid];
     log(`Você conjurou ${card.name}.`);
+    closeCardActionModal();
     render();
     triggerCastFlash(card.uid);
-  } else {
-    if (card.targetMode && card.targetMode !== "none") {
-      openTargetModal(card);
-      return;
-    } else {
+    return;
+  }
+
+  if (card.type === "spell") {
+    if (card.targetMode === "none") {
+      payCost(state.player, card.cost);
+      removeByUid(state.player.hand, card.uid);
       resolveSpell(card, state.player, state.ai, null);
       state.player.graveyard.push(card);
       log(`Você conjurou ${card.name}.`);
+      closeCardActionModal();
+      cleanupDeadCreatures();
+      checkWinner();
+      render();
+      return;
     }
+
+    beginTargetSelection(card);
+  }
+}
+
+function useTargetedSpellOn(target) {
+  const card = state.pendingActionCard;
+  if (!card) return;
+  if (!canPay(state.player, card.cost)) {
+    log(`Mana insuficiente para ${card.name}.`);
+    state.pendingActionCard = null;
+    state.targetingMode = false;
+    render();
+    return;
   }
 
+  payCost(state.player, card.cost);
+  removeByUid(state.player.hand, card.uid);
+  resolveSpell(card, state.player, state.ai, target);
+  state.player.graveyard.push(card);
+  log(`Você conjurou ${card.name}.`);
+  state.pendingActionCard = null;
+  state.targetingMode = false;
   cleanupDeadCreatures();
   if (checkWinner()) return;
   render();
@@ -1661,7 +1722,7 @@ function toggleAttacker(uid) {
 }
 
 function goToCombat() {
-  if (state.gameOver || state.currentTurn !== "player" || state.phase !== "main") return;
+  if (state.gameOver || state.currentTurn !== "player" || state.phase !== "main" || state.targetingMode) return;
   state.phase = "combat";
   updateInfoText("Selecione suas criaturas para atacar e clique em Atacar.");
   log("Você entrou na fase de combate.");
@@ -1762,7 +1823,7 @@ function playerAttack() {
 }
 
 function endPlayerTurn() {
-  if (state.gameOver || state.currentTurn !== "player") return;
+  if (state.gameOver || state.currentTurn !== "player" || state.targetingMode) return;
   state.player.battlefield.forEach(c => c.selected = false);
   state.phase = "end";
   log("Você encerrou o turno.");
@@ -1779,13 +1840,15 @@ function startPlayerTurn() {
   state.blockAssignments = {};
   state.selectedAttackerForBlock = null;
   state.aiCurrentAttackers = [];
+  state.targetingMode = false;
+  state.pendingActionCard = null;
 
   untapAndRefresh(state.player);
   drawCard(state.player, 1, true);
 
   log(`Turno de ${state.player.name}.`);
   log(`${state.player.name} comprou uma carta.`);
-  updateInfoText("Fase principal. Baixe 1 terreno, jogue cartas e prepare o combate.");
+  updateInfoText("Fase principal. Clique numa carta da mão para abrir a visualização grande.");
   showTurnOverlay(state.player.name);
   render();
 
@@ -1806,6 +1869,8 @@ function startAITurn() {
   state.blockAssignments = {};
   state.selectedAttackerForBlock = null;
   state.aiCurrentAttackers = [];
+  state.targetingMode = false;
+  state.pendingActionCard = null;
 
   untapAndRefresh(state.ai);
   drawCard(state.ai, 1, false);
@@ -1829,8 +1894,12 @@ function resolveAISpell(card, caster, opponent) {
         for (const c of opponent.battlefield) {
           if (c.power > target.power) target = c;
         }
-        const dealt = applySpellDamageToCreature(target, amount);
-        log(`BOT causou ${dealt} de dano em ${target.name}.`);
+        let finalDamage = amount;
+        if (target.ability === "ward") finalDamage = Math.max(0, amount - 1);
+        target.damageMarked += finalDamage;
+        triggerDamageFlash(target.uid);
+        triggerSpellImpact(target.uid);
+        log(`BOT causou ${finalDamage} de dano em ${target.name}.`);
       } else {
         opponent.life -= amount;
         log(`BOT causou ${amount} de dano direto em ${opponent.name}.`);
@@ -1857,6 +1926,7 @@ function resolveAISpell(card, caster, opponent) {
         }
         target.power += 2;
         target.currentToughness += 2;
+        markBoosted(target);
         triggerSpellImpact(target.uid);
         log(`${target.name} do BOT recebeu +2/+2.`);
       }
@@ -1879,6 +1949,7 @@ function resolveAISpell(card, caster, opponent) {
         target.power += 1;
         target.currentToughness += 1;
         caster.life += 2;
+        markBoosted(target);
         triggerSpellImpact(target.uid);
         log(`BOT fortaleceu ${target.name} e ganhou 2 de vida.`);
       }
@@ -1976,7 +2047,7 @@ function aiCombatPhase() {
 
 function openBlockModal() {
   document.getElementById("blockModal").classList.remove("hidden");
-  document.getElementById("blockInfoText").textContent = "Clique em um atacante do BOT e depois em um bloqueador seu. Cada criatura sua bloqueia apenas uma vez.";
+  document.getElementById("blockInfoText").textContent = "Clique em um atacante do BOT e depois em um bloqueador seu.";
   renderBlockModal();
 }
 
@@ -1989,6 +2060,8 @@ function renderMiniCard(card, options = {}) {
   const ability = card.abilityLabel ? `<span class="card-tag">${card.abilityLabel}</span>` : "";
   const rarity = `<span class="card-tag">${card.rarity || "Comum"}</span>`;
   const legendary = card.legendary ? `<span class="card-tag tag-legendary">Lendária</span>` : "";
+  const boostedClass = state.tempBoostedIds.has(card.uid) ? "stat-boost" : "";
+
   return `
     <div class="card board-card ${card.type} ${selected ? "selected" : ""} ${className}" data-mini-uid="${card.uid}">
       <div class="card-inner">
@@ -2002,7 +2075,7 @@ function renderMiniCard(card, options = {}) {
           <div class="card-tags-row">${ability}${rarity}${legendary}</div>
           <div class="card-footer">
             <span>${card.type.toUpperCase()}</span>
-            <span>${card.type === "creature" ? `${card.power}/${Math.max(0, getCreatureLife(card))}` : "Mágica"}</span>
+            <span class="${boostedClass}">${card.type === "creature" ? `${card.power}/${Math.max(0, getCreatureLife(card))}` : "Mágica"}</span>
           </div>
         </div>
       </div>
@@ -2085,12 +2158,13 @@ function cardHTML(card, opts = {}) {
     summonFlash = false,
     drawAnim = false,
     attackReady = false,
-    targetable = false
+    targetable = false,
+    giant = false
   } = opts;
 
   if (faceDown) {
     return `
-      <div class="card hand-card card-back">
+      <div class="card card-back">
         <div class="card-inner">
           <div class="back-symbol">✦</div>
         </div>
@@ -2107,15 +2181,17 @@ function cardHTML(card, opts = {}) {
     summonFlash ? "summon-flash" : "",
     drawAnim ? "draw-anim" : "",
     attackReady ? "attack-ready-ring" : "",
-    targetable ? "targetable" : ""
+    targetable ? "targetable" : "",
+    giant ? "giant-preview" : ""
   ].join(" ").trim();
 
   const abilityTag = card.type === "creature" && card.abilityLabel
-    ? `<span class="card-tag">${card.abilityLabel}</span>`
+    ? `<span class="card-tag ${state.tempBoostedIds.has(card.uid) ? "stat-boost" : ""}">${card.abilityLabel}</span>`
     : "";
   const rarityTag = `<span class="card-tag">${card.rarity || "Comum"}</span>`;
   const legendaryTag = card.legendary ? `<span class="card-tag tag-legendary">Lendária</span>` : "";
 
+  const boostedClass = state.tempBoostedIds.has(card.uid) ? "stat-boost" : "";
   const footerRight =
     card.type === "creature"
       ? `${getPowerWithAuras(card, card.ownerRef || state.player)}/${Math.max(0, getCreatureLife(card))}`
@@ -2136,7 +2212,7 @@ function cardHTML(card, opts = {}) {
           <div class="card-tags-row">${abilityTag}${rarityTag}${legendaryTag}</div>
           <div class="card-footer">
             <span>${card.type.toUpperCase()}</span>
-            <span>${footerRight}</span>
+            <span class="${boostedClass}">${footerRight}</span>
           </div>
         </div>
       </div>
@@ -2144,42 +2220,40 @@ function cardHTML(card, opts = {}) {
   `;
 }
 
-function renderHand(containerId, cards, faceDown = false, isPlayer = false) {
+function renderPlayerHandLinear(containerId, cards) {
+  const container = document.getElementById(containerId);
+  container.innerHTML = "";
+  cards.forEach(card => {
+    const wrap = document.createElement("div");
+    wrap.innerHTML = cardHTML(card, { drawAnim: state.newDrawnCardIds.includes(card.uid) });
+    const el = wrap.firstElementChild;
+    el.addEventListener("click", () => {
+      if (state.currentTurn !== "player" || state.phase !== "main" || state.gameOver || state.targetingMode) return;
+      openCardActionModal(card);
+    });
+    container.appendChild(el);
+  });
+}
+
+function renderOpponentHand(containerId, cards) {
   const container = document.getElementById(containerId);
   container.innerHTML = "";
   const count = cards.length;
   if (count === 0) return;
 
-  const spread = isPlayer ? 24 : 14;
+  const spread = 14;
   const startAngle = -((count - 1) * spread) / 2;
 
   cards.forEach((card, i) => {
     const wrap = document.createElement("div");
-    const drawAnim = isPlayer && state.newDrawnCardIds.includes(card.uid);
-    wrap.innerHTML = cardHTML(card, { faceDown, drawAnim });
+    wrap.innerHTML = cardHTML(card, { faceDown: true });
     const el = wrap.firstElementChild;
-
-    const offsetX = i * (isPlayer ? 34 : 20) - ((count - 1) * (isPlayer ? 34 : 20)) / 2;
+    const offsetX = i * 20 - ((count - 1) * 20) / 2;
     const angle = startAngle + i * spread;
-    const y = isPlayer ? Math.abs(angle) * 0.28 : 0;
-
-    el.style.left = `calc(50% - (${getComputedStyle(document.documentElement).getPropertyValue('--card-w').trim()} / 2) + ${offsetX}px)`;
+    el.style.left = `calc(50% - 54px + ${offsetX}px)`;
     el.style.zIndex = 20 + i;
-    el.style.transformOrigin = isPlayer ? "center 220px" : "center -50px";
-    el.style.transform = isPlayer
-      ? `translateY(${y}px) rotate(${angle}deg)`
-      : `translateY(0px) rotate(${angle * 0.22}deg)`;
-
-    if (isPlayer && !faceDown) {
-      el.addEventListener("mouseenter", () => {
-        el.style.transform = `translateY(${y - 16}px) rotate(${angle}deg) scale(1.03)`;
-      });
-      el.addEventListener("mouseleave", () => {
-        el.style.transform = `translateY(${y}px) rotate(${angle}deg) scale(1)`;
-      });
-      el.addEventListener("click", () => playPlayerCard(card.uid));
-    }
-
+    el.style.transformOrigin = "center -50px";
+    el.style.transform = `rotate(${angle * 0.22}deg)`;
     container.appendChild(el);
   });
 }
@@ -2197,7 +2271,7 @@ function renderBoardRow(containerId, cards, owner, isPlayerCreatures = false, si
       state.phase === "combat" &&
       creatureCanAttack(card);
 
-    const targetable = isTargetableCard(card, side);
+    const targetable = state.targetingMode && isTargetableCardFromPending(card, side);
 
     const wrap = document.createElement("div");
     wrap.innerHTML = cardHTML(card, {
@@ -2211,35 +2285,35 @@ function renderBoardRow(containerId, cards, owner, isPlayerCreatures = false, si
 
     const el = wrap.firstElementChild;
 
-    if (isPlayerCreatures) {
-      el.addEventListener("click", () => {
-        if (state.pendingSpell) {
-          if (state.pendingSpell.targetMode === "allyCreature") {
-            castPlayerSpellWithTarget(state.pendingSpell, { card, owner: state.player });
-          } else {
-            toggleAttacker(card.uid);
-          }
-        } else {
-          toggleAttacker(card.uid);
-        }
-      });
-    } else {
-      el.addEventListener("click", () => {
-        if (!state.pendingSpell) return;
-        if (state.pendingSpell.targetMode === "enemyCreature" || state.pendingSpell.targetMode === "enemyAny") {
-          castPlayerSpellWithTarget(state.pendingSpell, { card, owner: state.ai });
-        }
-      });
-    }
-
-    if (state.pendingSpell && state.pendingSpell.targetMode === "enemyAny" && side === "ai") {
-      el.addEventListener("dblclick", () => {
-        castPlayerSpellWithTarget(state.pendingSpell, { card, owner: state.ai });
-      });
+    if (state.targetingMode && targetable) {
+      el.addEventListener("click", () => handleTargetClick(card, side));
+    } else if (isPlayerCreatures) {
+      el.addEventListener("click", () => toggleAttacker(card.uid));
     }
 
     container.appendChild(el);
   });
+}
+
+function isTargetableCardFromPending(card, side) {
+  const pending = state.pendingActionCard;
+  if (!pending) return false;
+  const mode = pending.targetMode;
+  if (mode === "enemyCreature") return side === "ai";
+  if (mode === "allyCreature") return side === "player";
+  if (mode === "enemyAny") return side === "ai";
+  return false;
+}
+
+function handleTargetClick(card, side) {
+  const pending = state.pendingActionCard;
+  if (!pending) return;
+
+  if (pending.targetMode === "allyCreature" && side === "player") {
+    useTargetedSpellOn({ card, owner: state.player });
+  } else if ((pending.targetMode === "enemyCreature" || pending.targetMode === "enemyAny") && side === "ai") {
+    useTargetedSpellOn({ card, owner: state.ai });
+  }
 }
 
 function renderPiles() {
@@ -2270,16 +2344,16 @@ function render() {
   document.getElementById("playerNameLabel").textContent = state.player.name;
 
   document.getElementById("combatBtn").disabled =
-    state.currentTurn !== "player" || state.phase !== "main" || state.gameOver || !!state.pendingSpell;
+    state.currentTurn !== "player" || state.phase !== "main" || state.gameOver || state.targetingMode || !!state.selectedHandCard;
 
   document.getElementById("attackBtn").disabled =
-    state.currentTurn !== "player" || state.phase !== "combat" || state.gameOver || !!state.pendingSpell;
+    state.currentTurn !== "player" || state.phase !== "combat" || state.gameOver || state.targetingMode || !!state.selectedHandCard;
 
   document.getElementById("endTurnBtn").disabled =
-    state.currentTurn !== "player" || state.gameOver || !!state.pendingSpell;
+    state.currentTurn !== "player" || state.gameOver || state.targetingMode || !!state.selectedHandCard;
 
-  renderHand("playerHandFan", state.player.hand, false, true);
-  renderHand("aiHandFan", state.ai.hand, true, false);
+  renderPlayerHandLinear("playerHandFan", state.player.hand);
+  renderOpponentHand("aiHandFan", state.ai.hand);
 
   renderBoardRow("playerBattlefield", state.player.battlefield, state.player, true, "player");
   renderBoardRow("aiBattlefield", state.ai.battlefield, state.ai, false, "ai");
@@ -2330,7 +2404,7 @@ function finalizePregame() {
   document.getElementById("messageLog").innerHTML = "";
   log(`A partida começou. ${state.player.name} entrou na arena.`);
   log(`${state.player.name} começa com ${state.player.hand.length} cartas.`);
-  updateInfoText("Fase principal. Baixe um terreno e organize sua jogada.");
+  updateInfoText("Fase principal. Clique numa carta da mão para abrir a visualização grande.");
   render();
   showTurnOverlay(state.player.name);
 }
@@ -2355,21 +2429,24 @@ function startGame() {
   state.landPlayedThisTurn = false;
   state.newDrawnCardIds = [];
   state.newlySummonedIds = [];
-  state.pendingSpell = null;
   state.blockAssignments = {};
   state.selectedAttackerForBlock = null;
   state.aiCurrentAttackers = [];
   state.mulliganCountPlayer = 0;
   state.mulliganCountAI = 0;
   state.preGameReady = false;
+  state.selectedHandCard = null;
+  state.pendingActionCard = null;
+  state.targetingMode = false;
+  state.tempBoostedIds = new Set();
 
   state.player = createPlayer(state.playerName, false);
   state.ai = createPlayer("BOT", true);
 
   document.getElementById("messageLog").innerHTML = "";
   document.getElementById("winnerModal").classList.add("hidden");
-  document.getElementById("targetModal").classList.add("hidden");
   document.getElementById("blockModal").classList.add("hidden");
+  document.getElementById("cardActionModal").classList.add("hidden");
 
   setupPregameHands();
 }
@@ -2417,25 +2494,20 @@ document.getElementById("restartBtn").addEventListener("click", () => {
   startGame();
 });
 
-document.getElementById("cancelTargetBtn").addEventListener("click", () => {
-  if (!state.pendingSpell) return;
-  state.player.hand.push(state.pendingSpell);
-  state.pendingSpell = null;
-  updateMana(state.player);
-  document.getElementById("targetModal").classList.add("hidden");
-  render();
-});
-
 document.getElementById("confirmBlocksBtn").addEventListener("click", resolveManualBlocks);
+document.getElementById("confirmCardUseBtn").addEventListener("click", confirmCardUse);
+document.getElementById("cancelCardUseBtn").addEventListener("click", cancelCardAction);
 
-/* Clique duplo no avatar inimigo para mágicas enemyAny irem no jogador */
-document.querySelector(".enemy-avatar").addEventListener("dblclick", () => {
-  if (!state.pendingSpell) return;
-  if (state.pendingSpell.targetMode === "enemyAny") {
-    castPlayerSpellWithTarget(state.pendingSpell, { kind: "player" });
+/* alvo no bot via avatar */
+document.querySelector(".enemy-avatar").addEventListener("click", () => {
+  const pending = state.pendingActionCard;
+  if (!pending) return;
+  if (pending.targetMode === "enemyAny") {
+    useTargetedSpellOn({ kind: "player" });
   }
 });
 
-/* Estado visual inicial */
+/* estado inicial */
 applyResolutionClass("res-1680x1050");
+  
 </script>
