@@ -1,8 +1,18 @@
 <div id="game" class="res-1680x1050">
+  <canvas id="fxCanvas"></canvas>
+
   <div id="startScreen" class="start-screen">
+    <div class="start-bg-orb orb-1"></div>
+    <div class="start-bg-orb orb-2"></div>
+    <div class="start-bg-orb orb-3"></div>
+
     <div class="start-box">
-      <h1>Feitiçaria</h1>
-      <p>Não é Magic ein.</p>
+      <div class="start-top-badge">Feitiçaria</div>
+      <h1>V8 Do joguinho q n é Magic</h1>
+      <p class="start-desc">
+        Card game inspirado em magic, com muitas cartas, feitiços fortes, e um bot desgraçado.
+        Efeitos visuais e artes geradas no próprio canvas. Finalmente algo que não parece uma planilha com raiva.
+      </p>
       <style>
 
         * {
@@ -43,6 +53,14 @@ body {
   max-width: var(--game-max-width);
   margin: 0 auto;
   padding: 8px 12px 10px;
+  position: relative;
+}
+
+#fxCanvas {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 2400;
 }
 
 #game.res-1366x768 {
@@ -101,7 +119,6 @@ body {
   display: none !important;
 }
 
-/* Start / overlays */
 .start-screen,
 .turn-overlay,
 .overlay-modal,
@@ -115,9 +132,41 @@ body {
 
 .start-screen {
   background:
-    radial-gradient(circle at center, rgba(255,220,140,0.10), transparent 30%),
-    rgba(6, 10, 18, 0.92);
+    radial-gradient(circle at center, rgba(255,220,140,0.08), transparent 28%),
+    linear-gradient(180deg, rgba(8,13,20,0.96), rgba(10,14,24,0.96));
   z-index: 3000;
+  overflow: hidden;
+}
+
+.start-bg-orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(12px);
+  opacity: 0.55;
+}
+
+.orb-1 {
+  width: 280px;
+  height: 280px;
+  background: radial-gradient(circle, rgba(255,170,70,0.28), transparent 70%);
+  top: 8%;
+  left: 10%;
+}
+
+.orb-2 {
+  width: 360px;
+  height: 360px;
+  background: radial-gradient(circle, rgba(95,130,255,0.26), transparent 70%);
+  bottom: 5%;
+  right: 8%;
+}
+
+.orb-3 {
+  width: 200px;
+  height: 200px;
+  background: radial-gradient(circle, rgba(180,90,255,0.22), transparent 70%);
+  top: 18%;
+  right: 24%;
 }
 
 .turn-overlay {
@@ -135,16 +184,54 @@ body {
 .start-box,
 .overlay-box,
 .winner-box {
-  background: linear-gradient(180deg, #1a2435, #0f1622);
+  background: linear-gradient(180deg, rgba(26,36,53,0.96), rgba(15,22,34,0.96));
   border: 1px solid rgba(255,255,255,0.10);
   border-radius: 24px;
   padding: 24px;
   text-align: center;
   box-shadow: 0 30px 70px rgba(0,0,0,0.42);
+  position: relative;
+  z-index: 2;
 }
 
 .start-box {
-  width: min(92%, 620px);
+  width: min(94%, 700px);
+}
+
+.start-top-badge {
+  display: inline-block;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, rgba(255,194,82,0.18), rgba(255,154,84,0.16));
+  border: 1px solid rgba(255,211,120,0.18);
+  color: #ffd88f;
+  font-weight: 900;
+  letter-spacing: 1px;
+  margin-bottom: 8px;
+}
+
+.start-box h1 {
+  margin: 0 0 10px;
+  font-size: 42px;
+  color: #fff3c9;
+}
+
+.start-desc {
+  margin: 0 auto 20px;
+  max-width: 620px;
+  color: #d8e0ef;
+  line-height: 1.55;
+  font-size: 16px;
+}
+
+.start-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.start-actions {
+  margin-top: 8px;
 }
 
 .overlay-box,
@@ -158,12 +245,6 @@ body {
 
 .giant-card-box {
   width: min(96%, 760px);
-}
-
-.start-box h1,
-.overlay-box h2,
-.winner-box h2 {
-  margin-top: 0;
 }
 
 .form-row {
@@ -262,7 +343,6 @@ body {
   line-height: 1.45;
 }
 
-/* HUD */
 .hud-top {
   display: grid;
   grid-template-columns: 230px 1fr 430px;
@@ -387,7 +467,6 @@ body {
 .action-red { background: linear-gradient(135deg, #ff5b5b, #ff8d42); }
 .action-gold { background: linear-gradient(135deg, #c8911f, #ffcf56); color: #2a1d05; }
 
-/* Board */
 .main-board {
   display: grid;
   grid-template-columns: 148px 1fr 148px;
@@ -458,10 +537,7 @@ body {
   background: linear-gradient(180deg, #2d5ca1, #173158);
 }
 
-.enemy-pile {
-  background: linear-gradient(180deg, #432267, #221232);
-}
-
+.enemy-pile { background: linear-gradient(180deg, #432267, #221232); }
 .enemy-pile::before { background: linear-gradient(180deg, #5e2f92, #2b173f); }
 .enemy-pile::after { background: linear-gradient(180deg, #7a3ac0, #3b1e57); }
 
@@ -484,7 +560,6 @@ body {
   text-align: left;
 }
 
-/* Table */
 .table-area {
   position: relative;
   padding: 10px 12px;
@@ -593,13 +668,8 @@ body {
   border: 1px solid rgba(255,255,255,0.12);
 }
 
-.hp-pill {
-  background: linear-gradient(135deg, rgba(165,40,40,0.95), rgba(255,105,105,0.95));
-}
-
-.mana-pill {
-  background: linear-gradient(135deg, rgba(44,88,180,0.95), rgba(92,174,255,0.95));
-}
+.hp-pill { background: linear-gradient(135deg, rgba(165,40,40,0.95), rgba(255,105,105,0.95)); }
+.mana-pill { background: linear-gradient(135deg, rgba(44,88,180,0.95), rgba(92,174,255,0.95)); }
 
 .zone-title {
   color: #ecd8a1;
@@ -657,7 +727,6 @@ body {
     radial-gradient(circle at center, rgba(255,255,255,0.04), transparent 40%);
 }
 
-/* Player hand row linear */
 .player-hand-row {
   min-height: calc(var(--hand-card-h) + 10px);
   border-radius: 16px;
@@ -684,7 +753,6 @@ body {
   justify-content: center;
 }
 
-/* Cards */
 .card {
   width: var(--card-w);
   height: var(--card-h);
@@ -702,14 +770,6 @@ body {
 .player-hand-row .card {
   width: var(--hand-card-w);
   height: var(--hand-card-h);
-}
-
-.hand-card {
-  position: relative;
-}
-
-.board-card {
-  position: relative;
 }
 
 .opponent-hand-fan .card {
@@ -816,6 +876,13 @@ body {
   background:
     radial-gradient(circle at 30% 30%, rgba(255,255,255,0.18), transparent 25%),
     linear-gradient(135deg, rgba(255,255,255,0.06), rgba(0,0,0,0.18));
+  overflow: hidden;
+}
+
+.card-art canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
 }
 
 .card-text {
@@ -870,7 +937,6 @@ body {
   color: white;
 }
 
-/* Status highlights */
 .stat-boost {
   color: #56a8ff !important;
   text-shadow: 0 0 8px rgba(86,168,255,0.35);
@@ -964,7 +1030,6 @@ body {
   100% { transform: scale(1); filter: brightness(1); }
 }
 
-/* Log */
 .log-panel {
   margin-top: 10px;
   padding: 10px;
@@ -985,7 +1050,6 @@ body {
   border-bottom: 1px solid rgba(255,255,255,0.06);
 }
 
-/* Responsive */
 @media (max-width: 1450px) {
   .hud-top {
     grid-template-columns: 1fr;
@@ -1011,6 +1075,10 @@ body {
   .block-columns {
     grid-template-columns: 1fr;
   }
+
+  .start-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 @media (max-width: 980px) {
@@ -1030,25 +1098,28 @@ body {
     flex-wrap: wrap;
   }
 }
-        
       </style>
 
-      <div class="form-row">
-        <label for="playerNameInput">Nome do jogador</label>
-        <input id="playerNameInput" type="text" maxlength="18" placeholder="Digite seu nome" />
+      <div class="start-grid">
+        <div class="form-row">
+          <label for="playerNameInput">Nome do jogador</label>
+          <input id="playerNameInput" type="text" maxlength="18" placeholder="Digite seu nome" />
+        </div>
+
+        <div class="form-row">
+          <label for="resolutionSelect">Resolução da mesa</label>
+          <select id="resolutionSelect">
+            <option value="res-1366x768">1366 x 768</option>
+            <option value="res-1600x900">1600 x 900</option>
+            <option value="res-1680x1050" selected>1680 x 1050</option>
+            <option value="res-1920x1080">1920 x 1080</option>
+          </select>
+        </div>
       </div>
 
-      <div class="form-row">
-        <label for="resolutionSelect">Resolução da mesa</label>
-        <select id="resolutionSelect">
-          <option value="res-1366x768">1366 x 768</option>
-          <option value="res-1600x900">1600 x 900</option>
-          <option value="res-1680x1050" selected>1680 x 1050</option>
-          <option value="res-1920x1080">1920 x 1080</option>
-        </select>
+      <div class="start-actions">
+        <button id="startGameBtn">Iniciar Partida</button>
       </div>
-
-      <button id="startGameBtn">Iniciar Partida</button>
     </div>
   </div>
 
@@ -1065,7 +1136,7 @@ body {
         <button id="keepHandBtn">Manter Mão</button>
         <button id="mulliganBtn">Mulligan</button>
       </div>
-      <p class="small-note">Cada mulligan reduz sua mão em 1 carta. A vida é cheia dessas crueldades.</p>
+      <p class="small-note">Cada mulligan reduz sua mão em 1 carta. O universo adora cobrar pedágio.</p>
     </div>
   </div>
 
@@ -1111,13 +1182,13 @@ body {
   <div class="hud-top">
     <div class="brand-box">
       <div class="logo">Feitiçaria</div>
-      <div class="subtitle">V7 Card Focus</div>
+      <div class="subtitle">V8 Painted Cards</div>
     </div>
 
     <div class="status-box">
       <div id="turnText">Turno do Jogador</div>
       <div id="phaseText">Fase: Principal</div>
-      <div id="infoText">Clique numa carta da mão para abrir a visualização grande e decidir o próximo desastre.</div>
+      <div id="infoText">Clique numa carta da mão para abrir a visualização grande.</div>
     </div>
 
     <div class="top-right-box">
@@ -1249,31 +1320,31 @@ body {
     { name: "Planície", type: "land", text: "Gera mana para conjurações.", rarity: "Comum" }
   ],
   creatures: [
-    { name: "Lobo Prateado", type: "creature", cost: 1, power: 1, toughness: 1, ability: "haste", abilityLabel: "Ímpeto", text: "Pode atacar no turno em que entra.", rarity: "Comum" },
-    { name: "Escudeiro de Carvalho", type: "creature", cost: 2, power: 2, toughness: 2, ability: "none", abilityLabel: "", text: "Criatura simples e sólida.", rarity: "Comum" },
-    { name: "Goblin Saqueador", type: "creature", cost: 2, power: 3, toughness: 1, ability: "haste", abilityLabel: "Ímpeto", text: "Entra querendo confusão.", rarity: "Incomum" },
-    { name: "Místico do Vale", type: "creature", cost: 2, power: 1, toughness: 3, ability: "lifelink", abilityLabel: "Vida", text: "Ao causar dano direto, você ganha vida.", rarity: "Incomum" },
-    { name: "Arqueira Celeste", type: "creature", cost: 3, power: 2, toughness: 3, ability: "drawOnHit", abilityLabel: "Compra", text: "Ao causar dano direto, você compra 1 carta.", rarity: "Rara" },
-    { name: "Urso das Runas", type: "creature", cost: 3, power: 3, toughness: 3, ability: "none", abilityLabel: "", text: "O clássico honesto.", rarity: "Comum" },
-    { name: "Cavaleiro Rubro", type: "creature", cost: 4, power: 4, toughness: 3, ability: "trample", abilityLabel: "Atropelar", text: "Dano excedente passa para o jogador defensor.", rarity: "Rara" },
-    { name: "Guardião de Marfim", type: "creature", cost: 4, power: 2, toughness: 5, ability: "ward", abilityLabel: "Escudo", text: "Recebe 1 dano a menos de mágicas.", rarity: "Incomum" },
-    { name: "Hidra do Pântano", type: "creature", cost: 5, power: 5, toughness: 4, ability: "trample", abilityLabel: "Atropelar", text: "Difícil de segurar sem apanhar junto.", rarity: "Rara" },
-    { name: "Draco de Cinzas", type: "creature", cost: 5, power: 5, toughness: 5, ability: "lifelink", abilityLabel: "Vida", text: "Drena vida quando passa dano.", rarity: "Rara" },
-    { name: "Titã da Floresta", type: "creature", cost: 6, power: 6, toughness: 6, ability: "trample", abilityLabel: "Atropelar", text: "Gigante bruto, com dano que sobra.", rarity: "Rara" },
-    { name: "Colosso Arcano", type: "creature", cost: 7, power: 7, toughness: 7, ability: "ward", abilityLabel: "Escudo", text: "Reduz dano de mágicas recebidas.", rarity: "Mítica" },
-    { name: "Aureon, Rei Solar", type: "creature", cost: 7, power: 6, toughness: 7, ability: "legendBuff", abilityLabel: "Aura", text: "Lendária. Suas outras criaturas recebem +1 de poder.", rarity: "Mítica", legendary: true },
-    { name: "Nyxara, Bruxa Eterna", type: "creature", cost: 6, power: 4, toughness: 6, ability: "legendDrain", abilityLabel: "Dreno", text: "Lendária. Ao causar dano direto, o oponente perde 1 vida extra.", rarity: "Mítica", legendary: true }
+    { name: "Lobo Prateado", type: "creature", cost: 1, power: 1, toughness: 1, ability: "haste", abilityLabel: "Ímpeto", text: "Pode atacar no turno em que entra.", rarity: "Comum", artKind: "wolf" },
+    { name: "Escudeiro de Carvalho", type: "creature", cost: 2, power: 2, toughness: 2, ability: "none", abilityLabel: "", text: "Criatura simples e sólida.", rarity: "Comum", artKind: "knight" },
+    { name: "Goblin Saqueador", type: "creature", cost: 2, power: 3, toughness: 1, ability: "haste", abilityLabel: "Ímpeto", text: "Entra querendo confusão.", rarity: "Incomum", artKind: "goblin" },
+    { name: "Místico do Vale", type: "creature", cost: 2, power: 1, toughness: 3, ability: "lifelink", abilityLabel: "Vida", text: "Ao causar dano direto, você ganha vida.", rarity: "Incomum", artKind: "mage" },
+    { name: "Arqueira Celeste", type: "creature", cost: 3, power: 2, toughness: 3, ability: "drawOnHit", abilityLabel: "Compra", text: "Ao causar dano direto, você compra 1 carta.", rarity: "Rara", artKind: "archer" },
+    { name: "Urso das Runas", type: "creature", cost: 3, power: 3, toughness: 3, ability: "none", abilityLabel: "", text: "O clássico honesto.", rarity: "Comum", artKind: "bear" },
+    { name: "Cavaleiro Rubro", type: "creature", cost: 4, power: 4, toughness: 3, ability: "trample", abilityLabel: "Atropelar", text: "Dano excedente passa para o jogador defensor.", rarity: "Rara", artKind: "knight" },
+    { name: "Guardião de Marfim", type: "creature", cost: 4, power: 2, toughness: 5, ability: "ward", abilityLabel: "Escudo", text: "Recebe 1 dano a menos de mágicas.", rarity: "Incomum", artKind: "guardian" },
+    { name: "Hidra do Pântano", type: "creature", cost: 5, power: 5, toughness: 4, ability: "trample", abilityLabel: "Atropelar", text: "Difícil de segurar sem apanhar junto.", rarity: "Rara", artKind: "hydra" },
+    { name: "Draco de Cinzas", type: "creature", cost: 5, power: 5, toughness: 5, ability: "lifelink", abilityLabel: "Vida", text: "Drena vida quando passa dano.", rarity: "Rara", artKind: "dragon" },
+    { name: "Titã da Floresta", type: "creature", cost: 6, power: 6, toughness: 6, ability: "trample", abilityLabel: "Atropelar", text: "Gigante bruto, com dano que sobra.", rarity: "Rara", artKind: "titan" },
+    { name: "Colosso Arcano", type: "creature", cost: 7, power: 7, toughness: 7, ability: "ward", abilityLabel: "Escudo", text: "Reduz dano de mágicas recebidas.", rarity: "Mítica", artKind: "colossus" },
+    { name: "Aureon, Rei Solar", type: "creature", cost: 7, power: 6, toughness: 7, ability: "legendBuff", abilityLabel: "Aura", text: "Lendária. Suas outras criaturas recebem +1 de poder.", rarity: "Mítica", legendary: true, artKind: "king" },
+    { name: "Nyxara, Bruxa Eterna", type: "creature", cost: 6, power: 4, toughness: 6, ability: "legendDrain", abilityLabel: "Dreno", text: "Lendária. Ao causar dano direto, o oponente perde 1 vida extra.", rarity: "Mítica", legendary: true, artKind: "witch" }
   ],
   spells: [
-    { name: "Raio Arcano", type: "spell", cost: 2, effect: "damage2", text: "Escolha criatura inimiga ou jogador e cause 2 de dano.", rarity: "Comum", targetMode: "enemyAny" },
-    { name: "Bola de Fogo", type: "spell", cost: 3, effect: "damage3", text: "Escolha criatura inimiga ou jogador e cause 3 de dano.", rarity: "Incomum", targetMode: "enemyAny" },
-    { name: "Explosão Solar", type: "spell", cost: 4, effect: "damage4", text: "Escolha criatura inimiga ou jogador e cause 4 de dano.", rarity: "Rara", targetMode: "enemyAny" },
-    { name: "Cura Vital", type: "spell", cost: 2, effect: "heal3", text: "Ganhe 3 de vida.", rarity: "Comum", targetMode: "none" },
-    { name: "Benção do Vale", type: "spell", cost: 3, effect: "heal5", text: "Ganhe 5 de vida.", rarity: "Incomum", targetMode: "none" },
-    { name: "Sabedoria Antiga", type: "spell", cost: 3, effect: "draw2", text: "Compre 2 cartas.", rarity: "Incomum", targetMode: "none" },
-    { name: "Força Selvagem", type: "spell", cost: 2, effect: "buff2", text: "Escolha uma criatura sua. Ela recebe +2/+2.", rarity: "Comum", targetMode: "allyCreature" },
-    { name: "Destruição Sombria", type: "spell", cost: 5, effect: "destroy", text: "Destrua uma criatura inimiga.", rarity: "Rara", targetMode: "enemyCreature" },
-    { name: "Selo Lendário", type: "spell", cost: 4, effect: "legendHeal", text: "Escolha uma criatura sua. Ela recebe +1/+1 e você ganha 2 de vida.", rarity: "Mítica", targetMode: "allyCreature" }
+    { name: "Raio Arcano", type: "spell", cost: 2, effect: "damage2", text: "Escolha criatura inimiga ou jogador e cause 2 de dano.", rarity: "Comum", targetMode: "enemyAny", artKind: "lightning" },
+    { name: "Bola de Fogo", type: "spell", cost: 3, effect: "damage3", text: "Escolha criatura inimiga ou jogador e cause 3 de dano.", rarity: "Incomum", targetMode: "enemyAny", artKind: "fireball" },
+    { name: "Explosão Solar", type: "spell", cost: 4, effect: "damage4", text: "Escolha criatura inimiga ou jogador e cause 4 de dano.", rarity: "Rara", targetMode: "enemyAny", artKind: "sunburst" },
+    { name: "Cura Vital", type: "spell", cost: 2, effect: "heal3", text: "Ganhe 3 de vida.", rarity: "Comum", targetMode: "none", artKind: "heal" },
+    { name: "Benção do Vale", type: "spell", cost: 3, effect: "heal5", text: "Ganhe 5 de vida.", rarity: "Incomum", targetMode: "none", artKind: "blessing" },
+    { name: "Sabedoria Antiga", type: "spell", cost: 3, effect: "draw2", text: "Compre 2 cartas.", rarity: "Incomum", targetMode: "none", artKind: "wisdom" },
+    { name: "Força Selvagem", type: "spell", cost: 2, effect: "buff2", text: "Escolha uma criatura sua. Ela recebe +2/+2.", rarity: "Comum", targetMode: "allyCreature", artKind: "buff" },
+    { name: "Destruição Sombria", type: "spell", cost: 5, effect: "destroy", text: "Destrua uma criatura inimiga.", rarity: "Rara", targetMode: "enemyCreature", artKind: "darkblast" },
+    { name: "Selo Lendário", type: "spell", cost: 4, effect: "legendHeal", text: "Escolha uma criatura sua. Ela recebe +1/+1 e você ganha 2 de vida.", rarity: "Mítica", targetMode: "allyCreature", artKind: "seal" }
   ]
 };
 
@@ -1300,6 +1371,23 @@ const state = {
 };
 
 let uidCounter = 1;
+const artCache = new Map();
+
+function cardVisualPayload(card) {
+  return {
+    name: card.name,
+    type: card.type,
+    cost: card.cost ?? 0,
+    power: card.power ?? null,
+    toughness: card.toughness ?? null,
+    currentToughness: card.currentToughness ?? null,
+    abilityLabel: card.abilityLabel ?? "",
+    rarity: card.rarity ?? "Comum",
+    legendary: !!card.legendary,
+    artKind: card.artKind ?? null,
+    text: card.text ?? ""
+  };
+}
 
 function createCard(data) {
   return {
@@ -1382,6 +1470,7 @@ function applyResolutionClass(value) {
   game.classList.add(value);
   document.getElementById("liveResolutionSelect").value = value;
   document.getElementById("resolutionSelect").value = value;
+  resizeFxCanvas();
 }
 
 function drawCard(player, amount = 1, animateForPlayer = false) {
@@ -1530,6 +1619,415 @@ function markBoosted(card) {
   }, 1800);
 }
 
+/* FX Canvas */
+function resizeFxCanvas() {
+  const c = document.getElementById("fxCanvas");
+  c.width = window.innerWidth;
+  c.height = window.innerHeight;
+}
+window.addEventListener("resize", resizeFxCanvas);
+
+function animateProjectileBetweenElements(fromEl, toEl, color = "#7cc7ff", duration = 420) {
+  const canvas = document.getElementById("fxCanvas");
+  const ctx = canvas.getContext("2d");
+  if (!fromEl || !toEl) return Promise.resolve();
+
+  const a = fromEl.getBoundingClientRect();
+  const b = toEl.getBoundingClientRect();
+
+  const start = { x: a.left + a.width / 2, y: a.top + a.height / 2 };
+  const end = { x: b.left + b.width / 2, y: b.top + b.height / 2 };
+
+  return new Promise(resolve => {
+    const startTime = performance.now();
+
+    function frame(now) {
+      const t = Math.min(1, (now - startTime) / duration);
+      const x = start.x + (end.x - start.x) * t;
+      const y = start.y + (end.y - start.y) * t - Math.sin(t * Math.PI) * 24;
+
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      ctx.beginPath();
+      ctx.strokeStyle = color;
+      ctx.lineWidth = 4;
+      ctx.shadowBlur = 14;
+      ctx.shadowColor = color;
+      ctx.moveTo(start.x, start.y);
+      ctx.lineTo(x, y);
+      ctx.stroke();
+
+      ctx.beginPath();
+      ctx.fillStyle = color;
+      ctx.arc(x, y, 7, 0, Math.PI * 2);
+      ctx.fill();
+
+      if (t < 1) {
+        requestAnimationFrame(frame);
+      } else {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        resolve();
+      }
+    }
+
+    requestAnimationFrame(frame);
+  });
+}
+
+/* Art generation */
+function createArtDataURL(card) {
+  const safe = cardVisualPayload(card);
+  const key = `${safe.type}-${safe.artKind || safe.name}-${safe.legendary ? "L" : "N"}`;
+  if (artCache.has(key)) return artCache.get(key);
+
+  const c = document.createElement("canvas");
+  c.width = 240;
+  c.height = 120;
+  const ctx = c.getContext("2d");
+
+  const bgGrad = ctx.createLinearGradient(0, 0, 240, 120);
+  if (safe.type === "creature") {
+    bgGrad.addColorStop(0, "#3f2b17");
+    bgGrad.addColorStop(1, "#7b4d1c");
+  } else if (safe.type === "spell") {
+    bgGrad.addColorStop(0, "#2c1f59");
+    bgGrad.addColorStop(1, "#5432a4");
+  } else {
+    bgGrad.addColorStop(0, "#1b4f2a");
+    bgGrad.addColorStop(1, "#357949");
+  }
+  ctx.fillStyle = bgGrad;
+  ctx.fillRect(0, 0, c.width, c.height);
+
+  const glow = ctx.createRadialGradient(120, 35, 5, 120, 35, 90);
+  glow.addColorStop(0, "rgba(255,255,255,0.18)");
+  glow.addColorStop(1, "rgba(255,255,255,0)");
+  ctx.fillStyle = glow;
+  ctx.fillRect(0, 0, c.width, c.height);
+
+  ctx.save();
+  ctx.translate(120, 68);
+
+  switch (safe.artKind) {
+    case "wolf": drawWolf(ctx); break;
+    case "knight": drawKnight(ctx); break;
+    case "goblin": drawGoblin(ctx); break;
+    case "mage": drawMage(ctx); break;
+    case "archer": drawArcher(ctx); break;
+    case "bear": drawBear(ctx); break;
+    case "guardian": drawGuardian(ctx); break;
+    case "hydra": drawHydra(ctx); break;
+    case "dragon": drawDragon(ctx); break;
+    case "titan": drawTitan(ctx); break;
+    case "colossus": drawColossus(ctx); break;
+    case "king": drawKing(ctx); break;
+    case "witch": drawWitch(ctx); break;
+    case "lightning": drawLightning(ctx); break;
+    case "fireball": drawFireball(ctx); break;
+    case "sunburst": drawSunburst(ctx); break;
+    case "heal": drawHeal(ctx); break;
+    case "blessing": drawBlessing(ctx); break;
+    case "wisdom": drawWisdom(ctx); break;
+    case "buff": drawBuff(ctx); break;
+    case "darkblast": drawDarkBlast(ctx); break;
+    case "seal": drawSeal(ctx); break;
+    default: drawGeneric(ctx);
+  }
+
+  ctx.restore();
+
+  if (safe.legendary) {
+    ctx.strokeStyle = "rgba(255,120,40,0.75)";
+    ctx.lineWidth = 4;
+    ctx.strokeRect(6, 6, 228, 108);
+  }
+
+  const data = c.toDataURL("image/png");
+  artCache.set(key, data);
+  return data;
+}
+
+function strokeFill(ctx, fill, stroke = "rgba(0,0,0,0.35)", lineWidth = 4) {
+  ctx.fillStyle = fill;
+  ctx.fill();
+  ctx.lineWidth = lineWidth;
+  ctx.strokeStyle = stroke;
+  ctx.stroke();
+}
+
+function drawWolf(ctx) {
+  ctx.beginPath();
+  ctx.moveTo(-42, 20); ctx.lineTo(-18, -12); ctx.lineTo(6, -22); ctx.lineTo(32, -6); ctx.lineTo(46, 18); ctx.lineTo(10, 16); ctx.lineTo(-16, 28);
+  strokeFill(ctx, "#d7d9df");
+  ctx.beginPath();
+  ctx.moveTo(-14, -18); ctx.lineTo(-4, -42); ctx.lineTo(8, -18);
+  strokeFill(ctx, "#d7d9df");
+  ctx.beginPath();
+  ctx.arc(16, -4, 4, 0, Math.PI * 2);
+  strokeFill(ctx, "#ffb74d", "#4b2a10", 2);
+}
+
+function drawKnight(ctx) {
+  ctx.beginPath();
+  ctx.rect(-18, -28, 36, 56);
+  strokeFill(ctx, "#9fa8b5");
+  ctx.beginPath();
+  ctx.arc(0, -40, 16, 0, Math.PI * 2);
+  strokeFill(ctx, "#c6ced8");
+  ctx.beginPath();
+  ctx.moveTo(26, -4); ctx.lineTo(52, -26); ctx.lineTo(48, 18);
+  strokeFill(ctx, "#6ec7ff");
+}
+
+function drawGoblin(ctx) {
+  ctx.beginPath();
+  ctx.arc(0, -8, 28, 0, Math.PI * 2);
+  strokeFill(ctx, "#84d55a");
+  ctx.beginPath();
+  ctx.moveTo(-30, -16); ctx.lineTo(-52, -28); ctx.lineTo(-28, 2);
+  strokeFill(ctx, "#84d55a");
+  ctx.beginPath();
+  ctx.moveTo(30, -16); ctx.lineTo(52, -28); ctx.lineTo(28, 2);
+  strokeFill(ctx, "#84d55a");
+  ctx.beginPath();
+  ctx.rect(-8, 18, 16, 18);
+  strokeFill(ctx, "#8b5a2b");
+}
+
+function drawMage(ctx) {
+  ctx.beginPath();
+  ctx.moveTo(0, -48); ctx.lineTo(-30, 22); ctx.lineTo(30, 22);
+  strokeFill(ctx, "#6c63ff");
+  ctx.beginPath();
+  ctx.arc(0, -12, 14, 0, Math.PI * 2);
+  strokeFill(ctx, "#f5d6c6");
+  ctx.beginPath();
+  ctx.arc(34, -28, 12, 0, Math.PI * 2);
+  strokeFill(ctx, "#7ce7ff");
+}
+
+function drawArcher(ctx) {
+  ctx.beginPath();
+  ctx.arc(-6, -18, 14, 0, Math.PI * 2);
+  strokeFill(ctx, "#f0d2b7");
+  ctx.beginPath();
+  ctx.rect(-18, -4, 24, 42);
+  strokeFill(ctx, "#4caf50");
+  ctx.beginPath();
+  ctx.arc(22, -8, 22, Math.PI * 0.3, Math.PI * 1.7);
+  ctx.strokeStyle = "#d9b36f"; ctx.lineWidth = 5; ctx.stroke();
+  ctx.beginPath();
+  ctx.moveTo(22, -30); ctx.lineTo(22, 10);
+  ctx.strokeStyle = "#e6ecff"; ctx.lineWidth = 2; ctx.stroke();
+}
+
+function drawBear(ctx) {
+  ctx.beginPath();
+  ctx.ellipse(0, 10, 42, 28, 0, 0, Math.PI * 2);
+  strokeFill(ctx, "#7a5537");
+  ctx.beginPath();
+  ctx.arc(-22, -12, 14, 0, Math.PI * 2);
+  strokeFill(ctx, "#7a5537");
+  ctx.beginPath();
+  ctx.arc(22, -12, 14, 0, Math.PI * 2);
+  strokeFill(ctx, "#7a5537");
+}
+
+function drawGuardian(ctx) {
+  ctx.beginPath();
+  ctx.rect(-20, -34, 40, 68);
+  strokeFill(ctx, "#dfe6ef");
+  ctx.beginPath();
+  ctx.moveTo(-38, -6); ctx.lineTo(0, -34); ctx.lineTo(38, -6); ctx.lineTo(0, 40);
+  strokeFill(ctx, "#84c4ff");
+}
+
+function drawHydra(ctx) {
+  for (let i = -2; i <= 2; i++) {
+    ctx.beginPath();
+    ctx.arc(i * 18, -12 - Math.abs(i) * 6, 12, 0, Math.PI * 2);
+    strokeFill(ctx, "#4caf50");
+  }
+  ctx.beginPath();
+  ctx.ellipse(0, 26, 38, 18, 0, 0, Math.PI * 2);
+  strokeFill(ctx, "#2e7d32");
+}
+
+function drawDragon(ctx) {
+  ctx.beginPath();
+  ctx.moveTo(-42, 18); ctx.lineTo(-14, -18); ctx.lineTo(18, -22); ctx.lineTo(44, 8); ctx.lineTo(18, 16); ctx.lineTo(-8, 28);
+  strokeFill(ctx, "#b04a2a");
+  ctx.beginPath();
+  ctx.moveTo(-6, -14); ctx.lineTo(-38, -42); ctx.lineTo(-20, -4);
+  strokeFill(ctx, "#e87b38");
+  ctx.beginPath();
+  ctx.moveTo(2, -14); ctx.lineTo(38, -42); ctx.lineTo(20, -4);
+  strokeFill(ctx, "#e87b38");
+}
+
+function drawTitan(ctx) {
+  ctx.beginPath();
+  ctx.rect(-18, -24, 36, 58);
+  strokeFill(ctx, "#6d8f4e");
+  ctx.beginPath();
+  ctx.arc(0, -36, 16, 0, Math.PI * 2);
+  strokeFill(ctx, "#9fc47b");
+  ctx.beginPath();
+  ctx.rect(-42, -4, 18, 12);
+  strokeFill(ctx, "#7d5a38");
+  ctx.beginPath();
+  ctx.rect(24, -4, 18, 12);
+  strokeFill(ctx, "#7d5a38");
+}
+
+function drawColossus(ctx) {
+  ctx.beginPath();
+  ctx.rect(-26, -34, 52, 72);
+  strokeFill(ctx, "#7f91ad");
+  ctx.beginPath();
+  ctx.arc(0, -44, 18, 0, Math.PI * 2);
+  strokeFill(ctx, "#a8bdd9");
+  ctx.beginPath();
+  ctx.moveTo(-34, 10); ctx.lineTo(0, -4); ctx.lineTo(34, 10); ctx.lineTo(0, 34);
+  strokeFill(ctx, "#8fd3ff");
+}
+
+function drawKing(ctx) {
+  drawKnight(ctx);
+  ctx.beginPath();
+  ctx.moveTo(-14, -58); ctx.lineTo(-6, -42); ctx.lineTo(0, -56); ctx.lineTo(6, -42); ctx.lineTo(14, -58); ctx.lineTo(18, -38); ctx.lineTo(-18, -38);
+  strokeFill(ctx, "#ffbf47");
+}
+
+function drawWitch(ctx) {
+  ctx.beginPath();
+  ctx.arc(0, -8, 16, 0, Math.PI * 2);
+  strokeFill(ctx, "#d7c2ff");
+  ctx.beginPath();
+  ctx.moveTo(0, -58); ctx.lineTo(-28, -10); ctx.lineTo(28, -10);
+  strokeFill(ctx, "#3a255f");
+  ctx.beginPath();
+  ctx.moveTo(-34, 34); ctx.lineTo(-8, 12); ctx.lineTo(24, 18); ctx.lineTo(42, 38);
+  ctx.strokeStyle = "#7ce7ff"; ctx.lineWidth = 5; ctx.stroke();
+}
+
+function drawLightning(ctx) {
+  ctx.beginPath();
+  ctx.moveTo(-8, -40); ctx.lineTo(8, -10); ctx.lineTo(-2, -10); ctx.lineTo(10, 26); ctx.lineTo(-16, -2); ctx.lineTo(-2, -2);
+  strokeFill(ctx, "#9fe7ff");
+}
+
+function drawFireball(ctx) {
+  ctx.beginPath();
+  ctx.arc(0, 0, 24, 0, Math.PI * 2);
+  strokeFill(ctx, "#ff7a2d");
+  ctx.beginPath();
+  ctx.arc(0, 0, 12, 0, Math.PI * 2);
+  strokeFill(ctx, "#ffd35c");
+}
+
+function drawSunburst(ctx) {
+  for (let i = 0; i < 10; i++) {
+    const a = i * (Math.PI * 2 / 10);
+    ctx.beginPath();
+    ctx.moveTo(Math.cos(a) * 10, Math.sin(a) * 10);
+    ctx.lineTo(Math.cos(a) * 34, Math.sin(a) * 34);
+    ctx.strokeStyle = "#ffe27a";
+    ctx.lineWidth = 5;
+    ctx.stroke();
+  }
+  ctx.beginPath();
+  ctx.arc(0, 0, 18, 0, Math.PI * 2);
+  strokeFill(ctx, "#fff3a3");
+}
+
+function drawHeal(ctx) {
+  ctx.beginPath();
+  ctx.rect(-10, -34, 20, 68);
+  strokeFill(ctx, "#9af7b3");
+  ctx.beginPath();
+  ctx.rect(-34, -10, 68, 20);
+  strokeFill(ctx, "#9af7b3");
+}
+
+function drawBlessing(ctx) {
+  ctx.beginPath();
+  ctx.arc(0, -10, 16, 0, Math.PI * 2);
+  strokeFill(ctx, "#f8f6ff");
+  ctx.beginPath();
+  ctx.moveTo(-22, 20); ctx.lineTo(0, -6); ctx.lineTo(22, 20);
+  strokeFill(ctx, "#ffd56f");
+}
+
+function drawWisdom(ctx) {
+  ctx.beginPath();
+  ctx.rect(-34, -22, 68, 44);
+  strokeFill(ctx, "#c9b2ff");
+  ctx.beginPath();
+  ctx.moveTo(0, -22); ctx.lineTo(0, 22);
+  ctx.strokeStyle = "#5b3fa3"; ctx.lineWidth = 4; ctx.stroke();
+}
+
+function drawBuff(ctx) {
+  ctx.beginPath();
+  ctx.arc(0, 0, 24, 0, Math.PI * 2);
+  strokeFill(ctx, "#7fd2ff");
+  ctx.beginPath();
+  ctx.moveTo(0, -34); ctx.lineTo(0, 36);
+  ctx.strokeStyle = "#dff7ff"; ctx.lineWidth = 6; ctx.stroke();
+  ctx.beginPath();
+  ctx.moveTo(-18, -12); ctx.lineTo(0, -34); ctx.lineTo(18, -12);
+  ctx.strokeStyle = "#dff7ff"; ctx.lineWidth = 6; ctx.stroke();
+}
+
+function drawDarkBlast(ctx) {
+  ctx.beginPath();
+  ctx.arc(0, 0, 28, 0, Math.PI * 2);
+  strokeFill(ctx, "#3a255f");
+  ctx.beginPath();
+  ctx.arc(0, 0, 12, 0, Math.PI * 2);
+  strokeFill(ctx, "#a45eff");
+}
+
+function drawSeal(ctx) {
+  ctx.beginPath();
+  ctx.arc(0, 0, 28, 0, Math.PI * 2);
+  strokeFill(ctx, "#ffcb5e");
+  ctx.beginPath();
+  ctx.arc(0, 0, 14, 0, Math.PI * 2);
+  strokeFill(ctx, "#fff6c5");
+}
+
+function drawGeneric(ctx) {
+  ctx.beginPath();
+  ctx.arc(0, 0, 28, 0, Math.PI * 2);
+  strokeFill(ctx, "#cccccc");
+}
+
+function injectArtCanvases(root = document) {
+  root.querySelectorAll(".card-art[data-art-key]").forEach(holder => {
+    if (holder.dataset.artReady === "1") return;
+    const encoded = holder.dataset.cardPayload;
+    if (!encoded) return;
+
+    const safeCard = JSON.parse(decodeURIComponent(encoded));
+    const dataURL = createArtDataURL(safeCard);
+
+    const img = new Image();
+    img.onload = () => {
+      const c = document.createElement("canvas");
+      c.width = 240;
+      c.height = 120;
+      const ctx = c.getContext("2d");
+      ctx.drawImage(img, 0, 0, c.width, c.height);
+      holder.innerHTML = "";
+      holder.appendChild(c);
+      holder.dataset.artReady = "1";
+    };
+    img.src = dataURL;
+  });
+}
+
 function resolveSpell(card, caster, opponent, target = null) {
   switch (card.effect) {
     case "damage2":
@@ -1603,12 +2101,12 @@ function openCardActionModal(card) {
   const wrap = document.createElement("div");
   wrap.innerHTML = cardHTML(card, { isBoardCard: true, giant: true });
   const el = wrap.firstElementChild;
-  el.classList.add("giant-preview");
   preview.appendChild(el);
 
   document.getElementById("cardActionTitle").textContent = card.name;
-  document.getElementById("cardActionText").textContent = card.text || "Carta sem texto. Parabéns aos designers minimalistas.";
+  document.getElementById("cardActionText").textContent = card.text || "Carta sem texto. Os minimalistas venceram.";
   modal.classList.remove("hidden");
+  injectArtCanvases(preview);
 }
 
 function closeCardActionModal() {
@@ -1690,7 +2188,7 @@ function confirmCardUse() {
   }
 }
 
-function useTargetedSpellOn(target) {
+async function useTargetedSpellOn(target) {
   const card = state.pendingActionCard;
   if (!card) return;
   if (!canPay(state.player, card.cost)) {
@@ -1699,6 +2197,24 @@ function useTargetedSpellOn(target) {
     state.targetingMode = false;
     render();
     return;
+  }
+
+  const fromEl = document.querySelector(`#cardActionPreview .card`) || document.querySelector(`[data-uid="${card.uid}"]`);
+  let toEl = null;
+  let color = "#7cc7ff";
+
+  if (card.artKind === "fireball") color = "#ff934f";
+  if (card.artKind === "darkblast") color = "#b07cff";
+  if (card.artKind === "heal" || card.artKind === "blessing") color = "#7cff9a";
+
+  if (target.kind === "player") {
+    toEl = document.querySelector(".enemy-avatar");
+  } else if (target.card) {
+    toEl = document.querySelector(`[data-uid="${target.card.uid}"]`);
+  }
+
+  if (fromEl && toEl) {
+    await animateProjectileBetweenElements(fromEl, toEl, color, 420);
   }
 
   payCost(state.player, card.cost);
@@ -1749,7 +2265,7 @@ function chooseBestBlocker(attacker, blockers) {
   return best;
 }
 
-function resolveCombatBetween(attacker, blocker, attackingPlayer, defendingPlayer) {
+async function resolveCombatBetween(attacker, blocker, attackingPlayer, defendingPlayer) {
   const atkPower = getPowerWithAuras(attacker, attackingPlayer);
   blocker.damageMarked += atkPower;
   attacker.damageMarked += blocker.power;
@@ -1775,7 +2291,7 @@ function resolveCombatBetween(attacker, blocker, attackingPlayer, defendingPlaye
   }
 }
 
-function resolveDirectHit(attacker, attackingPlayer, defendingPlayer) {
+async function resolveDirectHit(attacker, attackingPlayer, defendingPlayer) {
   const atkPower = getPowerWithAuras(attacker, attackingPlayer);
   defendingPlayer.life -= atkPower;
   triggerAttackBurst(attacker.uid);
@@ -1783,7 +2299,7 @@ function resolveDirectHit(attacker, attackingPlayer, defendingPlayer) {
   applyDirectHitTriggers(attacker, attackingPlayer, defendingPlayer);
 }
 
-function playerAttack() {
+async function playerAttack() {
   if (state.gameOver || state.currentTurn !== "player" || state.phase !== "combat") return;
   const attackers = state.player.battlefield.filter(c => c.selected && creatureCanAttack(c));
 
@@ -1796,7 +2312,7 @@ function playerAttack() {
 
   let availableBlockers = state.ai.battlefield.filter(c => !c.tapped);
 
-  attackers.forEach(attacker => {
+  for (const attacker of attackers) {
     attacker.tapped = true;
     attacker.selected = false;
     triggerAttackBurst(attacker.uid);
@@ -1807,13 +2323,22 @@ function playerAttack() {
       availableBlockers = availableBlockers.filter(c => c.uid !== blocker.uid);
     }
 
+    const fromEl = document.querySelector(`[data-uid="${attacker.uid}"]`);
+    const toEl = blocker
+      ? document.querySelector(`[data-uid="${blocker.uid}"]`)
+      : document.querySelector(".enemy-avatar");
+
+    if (fromEl && toEl) {
+      await animateProjectileBetweenElements(fromEl, toEl, blocker ? "#ffd36b" : "#ff7c5f", 280);
+    }
+
     if (blocker) {
       log(`${blocker.name} bloqueou ${attacker.name}.`);
-      resolveCombatBetween(attacker, blocker, state.player, state.ai);
+      await resolveCombatBetween(attacker, blocker, state.player, state.ai);
     } else {
-      resolveDirectHit(attacker, state.player, state.ai);
+      await resolveDirectHit(attacker, state.player, state.ai);
     }
-  });
+  }
 
   cleanupDeadCreatures();
   if (checkWinner()) return;
@@ -2061,6 +2586,7 @@ function renderMiniCard(card, options = {}) {
   const rarity = `<span class="card-tag">${card.rarity || "Comum"}</span>`;
   const legendary = card.legendary ? `<span class="card-tag tag-legendary">Lendária</span>` : "";
   const boostedClass = state.tempBoostedIds.has(card.uid) ? "stat-boost" : "";
+  const payload = encodeURIComponent(JSON.stringify(cardVisualPayload(card)));
 
   return `
     <div class="card board-card ${card.type} ${selected ? "selected" : ""} ${className}" data-mini-uid="${card.uid}">
@@ -2069,7 +2595,7 @@ function renderMiniCard(card, options = {}) {
           <div class="card-name ${card.legendary ? "legendary-name" : ""}">${card.name}</div>
           <div class="card-cost">${card.type === "land" ? "" : card.cost}</div>
         </div>
-        <div class="card-art"></div>
+        <div class="card-art" data-art-key="${card.type}-${card.artKind || card.name}" data-card-payload="${payload}"></div>
         <div class="card-text">${card.text || ""}</div>
         <div class="card-bottom">
           <div class="card-tags-row">${ability}${rarity}${legendary}</div>
@@ -2116,22 +2642,33 @@ function renderBlockModal() {
     });
     defendBox.appendChild(el);
   });
+
+  injectArtCanvases(document.getElementById("blockModal"));
 }
 
-function resolveManualBlocks() {
+async function resolveManualBlocks() {
   closeBlockModal();
 
-  state.aiCurrentAttackers.forEach(attacker => {
+  for (const attacker of state.aiCurrentAttackers) {
     const blockerUid = state.blockAssignments[attacker.uid];
     const blocker = blockerUid ? findByUid(state.player.battlefield, blockerUid) : null;
 
+    const fromEl = document.querySelector(`[data-uid="${attacker.uid}"]`);
+    const toEl = blocker
+      ? document.querySelector(`[data-uid="${blocker.uid}"]`)
+      : document.querySelector(".player-card-ui");
+
+    if (fromEl && toEl) {
+      await animateProjectileBetweenElements(fromEl, toEl, blocker ? "#ffd36b" : "#ff7c5f", 280);
+    }
+
     if (blocker) {
       log(`${blocker.name} bloqueou ${attacker.name}.`);
-      resolveCombatBetween(attacker, blocker, state.ai, state.player);
+      await resolveCombatBetween(attacker, blocker, state.ai, state.player);
     } else {
-      resolveDirectHit(attacker, state.ai, state.player);
+      await resolveDirectHit(attacker, state.ai, state.player);
     }
-  });
+  }
 
   cleanupDeadCreatures();
   if (checkWinner()) return;
@@ -2199,6 +2736,8 @@ function cardHTML(card, opts = {}) {
         ? "Mana"
         : "Mágica";
 
+  const payload = encodeURIComponent(JSON.stringify(cardVisualPayload(card)));
+
   return `
     <div class="${classes}" data-uid="${card.uid}">
       <div class="card-inner">
@@ -2206,7 +2745,7 @@ function cardHTML(card, opts = {}) {
           <div class="card-name ${card.legendary ? "legendary-name" : ""}">${card.name}</div>
           <div class="card-cost">${card.type === "land" ? "" : card.cost}</div>
         </div>
-        <div class="card-art"></div>
+        <div class="card-art" data-art-key="${card.type}-${card.artKind || card.name}" data-card-payload="${payload}"></div>
         <div class="card-text">${card.text || ""}</div>
         <div class="card-bottom">
           <div class="card-tags-row">${abilityTag}${rarityTag}${legendaryTag}</div>
@@ -2233,6 +2772,7 @@ function renderPlayerHandLinear(containerId, cards) {
     });
     container.appendChild(el);
   });
+  injectArtCanvases(container);
 }
 
 function renderOpponentHand(containerId, cards) {
@@ -2293,6 +2833,8 @@ function renderBoardRow(containerId, cards, owner, isPlayerCreatures = false, si
 
     container.appendChild(el);
   });
+
+  injectArtCanvases(container);
 }
 
 function isTargetableCardFromPending(card, side) {
@@ -2392,6 +2934,7 @@ function openMulliganModal() {
     preview.appendChild(wrap.firstElementChild);
   });
 
+  injectArtCanvases(preview);
   document.getElementById("mulliganBtn").disabled = state.player.hand.length <= 4;
   modal.classList.remove("hidden");
 }
@@ -2423,6 +2966,7 @@ function setupPregameHands() {
 
 function startGame() {
   uidCounter = 1;
+  artCache.clear();
   state.gameOver = false;
   state.currentTurn = "player";
   state.phase = "main";
@@ -2498,7 +3042,6 @@ document.getElementById("confirmBlocksBtn").addEventListener("click", resolveMan
 document.getElementById("confirmCardUseBtn").addEventListener("click", confirmCardUse);
 document.getElementById("cancelCardUseBtn").addEventListener("click", cancelCardAction);
 
-/* alvo no bot via avatar */
 document.querySelector(".enemy-avatar").addEventListener("click", () => {
   const pending = state.pendingActionCard;
   if (!pending) return;
@@ -2507,7 +3050,6 @@ document.querySelector(".enemy-avatar").addEventListener("click", () => {
   }
 });
 
-/* estado inicial */
 applyResolutionClass("res-1680x1050");
-  
+resizeFxCanvas();
 </script>
